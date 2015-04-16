@@ -16,6 +16,9 @@ class ViewController: UIViewController {
 
     private var userKey: String? = nil
     private var sessionID: String? = nil
+    private var firstName: String? = nil
+    private var lastName: String? = nil
+    private var email: String? = nil
 
 
     override func viewDidLoad() {
@@ -52,12 +55,72 @@ class ViewController: UIViewController {
                 if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
                     self.userKey = accountDict["key"] as? String
                     self.sessionID = sessionDict["id"] as? String
-                    println("\(self.userKey)\n\(self.sessionID)")
+                          println("\(self.userKey)\n\(self.sessionID)")
+                    dispatch_async(dispatch_get_main_queue(), { self.loadPublicUserData() })
                 }
             }
         }
         task.resume()
     }
+
+
+    private func loadPublicUserData() {
+        if self.userKey == nil { println("loadPublicUserData but userKey is nil"); return }
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(self.userKey!)")!)
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil { // Handle error...
+                println("Failed to get Udacity public user data: \(error)")
+                return
+            }
+            let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
+            var parseError: NSError? = nil
+            let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
+            if let error = parseError {
+                println("Failed to parse Udacity data: \(error)")
+            } else {
+                if let userDict = topDict!["user"] as? NSDictionary {
+                    self.lastName = userDict["last_name"] as? String
+                    self.firstName = userDict["first_name"] as? String
+                    if let emailDict = userDict["email"] as? NSDictionary {
+                        self.email = emailDict["address"] as? String
+                    }
+                    //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
+                    dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
+                }
+            }
+        }
+        task.resume()
+    }
+
+    private func loadStudentLocations() {
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil { // Handle error...
+                println("Failed to get Parse API student location data: \(error)")
+                return
+            }
+            //    println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError? = nil
+            let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
+            if let error = parseError {
+                println("Failed to parse Parse data: \(error)")
+            } else {
+                if let userDict = topDict!["user"] as? NSDictionary {
+
+                    
+                    //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
+                    //  dispatch_async(dispatch_get_main_queue(), {  })
+                }
+            }
+        }
+        }
+        task.resume()
+    }
+
 
 }
 
