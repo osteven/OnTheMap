@@ -19,12 +19,19 @@ class ViewController: UIViewController {
     private var firstName: String? = nil
     private var lastName: String? = nil
     private var email: String? = nil
+    private var studentManager: StudentManager? = nil
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //     loginTextField.text = ""
+        // spacing from here: http://stackoverflow.com/questions/7565645/indent-the-text-in-a-uitextfield
+        let loginSpacer = UIView(frame: CGRectMake(0, 0, 10, 10))
+        loginTextField.leftViewMode = .Always
+        loginTextField.leftView = loginSpacer
+        let passSpacer = UIView(frame: CGRectMake(0, 0, 10, 10))
+        passwordTextField.leftViewMode = .Always
+        passwordTextField.leftView = passSpacer
     }
 
    @IBAction func doLogin() {
@@ -109,14 +116,14 @@ class ViewController: UIViewController {
             if let error = parseError {
                 println("Failed to parse Parse data: \(error)")
             } else {
-                if let userDict = topDict!["user"] as? NSDictionary {
-
-                    
-                    //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
+                if let userDict = topDict!["results"] as? [[String: AnyObject]] {
+                    self.studentManager = StudentManager(dictionary: userDict)
+                    println("\(self.studentManager)")
                     //  dispatch_async(dispatch_get_main_queue(), {  })
-                }
+                } else {
+                    println("Failed to find user dictionary")
+               }
             }
-        }
         }
         task.resume()
     }
