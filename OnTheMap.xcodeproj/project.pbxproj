@@ -16,6 +16,7 @@
 		B035E2D71AE02E1D00D13596 /* StudentInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D61AE02E1D00D13596 /* StudentInformation.swift */; };
 		B035E2D91AE040A900D13596 /* StudentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D81AE040A900D13596 /* StudentManager.swift */; };
 		B0CE28201AE07524004ED171 /* NetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE281F1AE07524004ED171 /* NetClient.swift */; };
+		B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28211AE09E9B004ED171 /* CurrentUser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		B035E2DB1AE0500400D13596 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		B035E2DC1AE0500400D13596 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		B0CE281F1AE07524004ED171 /* NetClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetClient.swift; sourceTree = "<group>"; };
+		B0CE28211AE09E9B004ED171 /* CurrentUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				B035E2D61AE02E1D00D13596 /* StudentInformation.swift */,
 				B035E2D81AE040A900D13596 /* StudentManager.swift */,
 				B0CE281F1AE07524004ED171 /* NetClient.swift */,
+				B0CE28211AE09E9B004ED171 /* CurrentUser.swift */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 				B035E2D91AE040A900D13596 /* StudentManager.swift in Sources */,
 				B0CE28201AE07524004ED171 /* NetClient.swift in Sources */,
 				B035E2B91ADF25B400D13596 /* ViewController.swift in Sources */,
+				B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */,
 				B035E2B71ADF25B400D13596 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

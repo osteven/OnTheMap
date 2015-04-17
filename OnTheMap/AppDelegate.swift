@@ -15,12 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 
-    var userKey: String? = nil
-    var sessionID: String? = nil
-    var firstName: String? = nil
-    var lastName: String? = nil
-    var email: String? = nil
-
+    let currentUser = CurrentUser()
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {

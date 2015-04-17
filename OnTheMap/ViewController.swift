@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     private let netClient = NetClient()
     private var studentManager: StudentManager? = nil
 
+    private let currentUser = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
 
 
     override func viewDidLoad() {
@@ -84,9 +85,9 @@ class ViewController: UIViewController {
             println("Failed to get parse Udacity data: \(error)")
         } else {
             if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
-                self.userKey = accountDict["key"] as? String
-                self.sessionID = sessionDict["id"] as? String
-                println("\(self.userKey)\n\(self.sessionID)")
+                self.currentUser.userKey = accountDict["key"] as? String
+                self.currentUser.sessionID = sessionDict["id"] as? String
+                println("\(self.currentUser.userKey)\n\(self.currentUser.sessionID)")
                 dispatch_async(dispatch_get_main_queue(), { self.loadPublicUserData() })
             }
         }
@@ -95,8 +96,8 @@ class ViewController: UIViewController {
 
 
     private func loadPublicUserData() {
-        if self.userKey == nil { println("loadPublicUserData but userKey is nil"); return }
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(self.userKey!)")!)
+        if self.currentUser.userKey == nil { println("loadPublicUserData but userKey is nil"); return }
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(self.currentUser.userKey!)")!)
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil { // Handle error...
@@ -110,10 +111,10 @@ class ViewController: UIViewController {
                 println("Failed to parse Udacity data: \(error)")
             } else {
                 if let userDict = topDict!["user"] as? NSDictionary {
-                    self.lastName = userDict["last_name"] as? String
-                    self.firstName = userDict["first_name"] as? String
+                    self.currentUser.lastName = userDict["last_name"] as? String
+                    self.currentUser.firstName = userDict["first_name"] as? String
                     if let emailDict = userDict["email"] as? NSDictionary {
-                        self.email = emailDict["address"] as? String
+                        self.currentUser.email = emailDict["address"] as? String
                     }
                     //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
                     //            dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
