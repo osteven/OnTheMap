@@ -13,13 +13,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var loginTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
 
-
-    private var userKey: String? = nil
-    private var sessionID: String? = nil
-    private var firstName: String? = nil
-    private var lastName: String? = nil
-    private var email: String? = nil
+    private let netClient = NetClient()
     private var studentManager: StudentManager? = nil
+
 
 
     override func viewDidLoad() {
@@ -34,12 +30,14 @@ class ViewController: UIViewController {
         passwordTextField.leftView = passSpacer
     }
 
-   @IBAction func doLogin() {
+    @IBAction func doLogin() {
         if let userName = loginTextField.text, let password = passwordTextField.text {
             self.loadSessionIDAndUserKey(userName, password: password)
-         }
+        }
     }
+    
 
+/*
     private func loadSessionIDAndUserKey(userName: String, password: String) {
         let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/session")!)
         request.HTTPMethod = "POST"
@@ -69,6 +67,31 @@ class ViewController: UIViewController {
         }
         task.resume()
     }
+*/
+    private func loadSessionIDAndUserKey(userName: String, password: String) {
+        netClient.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
+    }
+
+    func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
+        if error != nil {
+            println("Failed to get Udacity session: \(error)")
+            return
+        }
+        let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
+        var parseError: NSError? = nil
+        let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
+        if let error = parseError {
+            println("Failed to get parse Udacity data: \(error)")
+        } else {
+            if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
+                self.userKey = accountDict["key"] as? String
+                self.sessionID = sessionDict["id"] as? String
+                println("\(self.userKey)\n\(self.sessionID)")
+                dispatch_async(dispatch_get_main_queue(), { self.loadPublicUserData() })
+            }
+        }
+    }
+
 
 
     private func loadPublicUserData() {
@@ -93,13 +116,39 @@ class ViewController: UIViewController {
                         self.email = emailDict["address"] as? String
                     }
                     //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
-                    dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
+                    //            dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
                 }
             }
         }
         task.resume()
     }
 
+
+    func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
+        if error != nil { // Handle error...
+            println("Failed to get Parse API student location data: \(error)")
+            return
+        }
+        //    println(NSString(data: data, encoding: NSUTF8StringEncoding))
+        var parseError: NSError? = nil
+        let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
+        if let error = parseError {
+            println("Failed to parse Parse data: \(error)")
+        } else {
+            if let userDict = topDict!["results"] as? [[String: AnyObject]] {
+                self.studentManager = StudentManager(dictionary: userDict)
+                println("\(self.studentManager)")
+                //  dispatch_async(dispatch_get_main_queue(), {  })
+            } else {
+                println("Failed to find user dictionary")
+            }
+        }
+    }
+
+    private func loadStudentLocations() {
+        netClient.loadStudentLocations(studentLocationClosure)
+    }
+/*
     private func loadStudentLocations() {
         let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
@@ -127,7 +176,7 @@ class ViewController: UIViewController {
         }
         task.resume()
     }
-
+*/
 
 }
 
