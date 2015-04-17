@@ -11,28 +11,26 @@ import UIKit
 class MapViewController: UIViewController {
 
 
-    @IBOutlet weak var toolBar: UIToolbar!
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
 
+        let pinButton = UIBarButtonItem(image: UIImage(named: "Pin.pdf"), style: .Plain, target: self, action: Selector("doPin"))
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: Selector("doRefresh"))
 
-        let label = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 48.0, height: 32.0))
-        label.textAlignment = .Center
-        label.text = "On The Map"
-        let buttonTitle = UIBarButtonItem(customView: label)
+        let items = [refreshButton, pinButton]
+        self.navigationItem.rightBarButtonItems = items
 
-let logoutBtn = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: nil)
-
-        let pinBtn = UIBarButtonItem(title: "Pin", style: .Plain, target: self, action: nil)
-        pinBtn.image = UIImage(named: "pin")
-
-        let reloadBtn = UIBarButtonItem(title: "Reload", style: .Plain, target: self, action: nil)
-let btnArray = [logoutBtn, buttonTitle, pinBtn, reloadBtn]
-
-        toolBar.items = btnArray
     }
 
+
+    func doPin() {
+
+    }
+
+
+    func doRefresh() {
+
+    }
 }
