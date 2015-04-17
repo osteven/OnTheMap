@@ -17,6 +17,8 @@
 		B035E2D91AE040A900D13596 /* StudentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D81AE040A900D13596 /* StudentManager.swift */; };
 		B0CE28201AE07524004ED171 /* NetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE281F1AE07524004ED171 /* NetClient.swift */; };
 		B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28211AE09E9B004ED171 /* CurrentUser.swift */; };
+		B0CE28241AE171C3004ED171 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0CE28231AE171C3004ED171 /* MapKit.framework */; };
+		B0CE28261AE18B6D004ED171 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28251AE18B6D004ED171 /* MapViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		B035E2DC1AE0500400D13596 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		B0CE281F1AE07524004ED171 /* NetClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetClient.swift; sourceTree = "<group>"; };
 		B0CE28211AE09E9B004ED171 /* CurrentUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
+		B0CE28231AE171C3004ED171 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		B0CE28251AE18B6D004ED171 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0CE28241AE171C3004ED171 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +75,7 @@
 		B035E2A81ADF25B400D13596 = {
 			isa = PBXGroup;
 			children = (
+				B0CE28231AE171C3004ED171 /* MapKit.framework */,
 				B035E2B31ADF25B400D13596 /* OnTheMap */,
 				B035E2C91ADF25B500D13596 /* OnTheMapTests */,
 				B035E2B21ADF25B400D13596 /* Products */,
@@ -98,6 +104,7 @@
 				B035E2D81AE040A900D13596 /* StudentManager.swift */,
 				B0CE281F1AE07524004ED171 /* NetClient.swift */,
 				B0CE28211AE09E9B004ED171 /* CurrentUser.swift */,
+				B0CE28251AE18B6D004ED171 /* MapViewController.swift */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -236,6 +243,7 @@
 				B035E2B91ADF25B400D13596 /* ViewController.swift in Sources */,
 				B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */,
 				B035E2B71ADF25B400D13596 /* AppDelegate.swift in Sources */,
+				B0CE28261AE18B6D004ED171 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

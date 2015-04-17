@@ -12,6 +12,9 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var loginTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var testBtn: UIButton!
+
+
 
     private let netClient = NetClient()
     private var studentManager: StudentManager? = nil
@@ -29,6 +32,13 @@ class ViewController: UIViewController {
         let passSpacer = UIView(frame: CGRectMake(0, 0, 10, 10))
         passwordTextField.leftViewMode = .Always
         passwordTextField.leftView = passSpacer
+
+        self.configureUI()
+
+        testBtn.addTarget(self, action: "test", forControlEvents: .TouchUpInside)
+
+
+
     }
 
 
@@ -39,6 +49,10 @@ class ViewController: UIViewController {
         if let userName = loginTextField.text, let password = passwordTextField.text {
             self.loadSessionIDAndUserKey(userName, password: password)
         }
+    }
+
+    @IBAction func test() {
+println("test")
     }
 
     private func loadSessionIDAndUserKey(userName: String, password: String) {
@@ -53,6 +67,9 @@ class ViewController: UIViewController {
     private func loadStudentLocations() {
         netClient.loadStudentLocations(studentLocationClosure)
     }
+
+    // MARK: -
+    //TODO: slide up and dismiss the keyboard
 
 
     // MARK: -
@@ -97,6 +114,12 @@ class ViewController: UIViewController {
                 }
                 //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
                 //            dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
+
+                dispatch_async(dispatch_get_main_queue(), {
+                    let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! UITabBarController
+                    self.presentViewController(controller, animated: true, completion: nil)
+                })
+
             }
         }
     }
@@ -122,6 +145,18 @@ class ViewController: UIViewController {
         }
     }
 
+    // 251, 155, 43  -> 252, 112, 33
+     func configureUI() {
+        /* Configure background gradient */
+        self.view.backgroundColor = UIColor.clearColor()
+        let colorTop = UIColor(red: 0.984, green: 0.605, blue: 0.168, alpha: 1.0).CGColor
+        let colorBottom = UIColor(red: 0.984, green: 0.438, blue: 0.129, alpha: 1.0).CGColor
+        var backgroundGradient = CAGradientLayer()
+        backgroundGradient.colors = [colorTop, colorBottom]
+        backgroundGradient.locations = [0.0, 1.0]
+        backgroundGradient.frame = self.view.frame
+        self.view.layer.insertSublayer(backgroundGradient, atIndex: 0)
+    }
 
 }
 
