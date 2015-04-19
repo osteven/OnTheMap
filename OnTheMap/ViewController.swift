@@ -17,7 +17,8 @@ class ViewController: UIViewController {
 
 
     private let netClient = NetClient()
-    private var studentManager: StudentManager? = nil
+    //    private var studentManager: StudentManager? = nil
+    //   private let studentManager = (UIApplication.sharedApplication().delegate as! AppDelegate).studentManager
 
     private let currentUser = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
 
@@ -35,9 +36,6 @@ class ViewController: UIViewController {
 
         self.configureUI()
 
-        testBtn.addTarget(self, action: "test", forControlEvents: .TouchUpInside)
-
-
 
     }
 
@@ -51,10 +49,6 @@ class ViewController: UIViewController {
         }
     }
 
-    @IBAction func test() {
-println("test")
-    }
-
     private func loadSessionIDAndUserKey(userName: String, password: String) {
         netClient.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
     }
@@ -64,9 +58,6 @@ println("test")
         netClient.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
     }
 
-    private func loadStudentLocations() {
-        netClient.loadStudentLocations(studentLocationClosure)
-    }
 
     // MARK: -
     //TODO: slide up and dismiss the keyboard
@@ -112,8 +103,10 @@ println("test")
                 if let emailDict = userDict["email"] as? NSDictionary {
                     self.currentUser.email = emailDict["address"] as? String
                 }
-                //   println("\(self.firstName)\n\(self.lastName)\n\(self.email)")
-                //            dispatch_async(dispatch_get_main_queue(), { self.loadStudentLocations() })
+
+                // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
+                let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
+                dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(self.studentLocationClosure) })
 
                 dispatch_async(dispatch_get_main_queue(), {
                     let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! UITabBarController
@@ -129,16 +122,13 @@ println("test")
             println("Failed to get Parse API student location data: \(error)")
             return
         }
-        //    println(NSString(data: data, encoding: NSUTF8StringEncoding))
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
         if let error = parseError {
             println("Failed to parse Parse data: \(error)")
         } else {
             if let userDict = topDict!["results"] as? [[String: AnyObject]] {
-                self.studentManager = StudentManager(dictionary: userDict)
-                println("\(self.studentManager)")
-                //  dispatch_async(dispatch_get_main_queue(), {  })
+                StudentManager.sharedInstance.load(userDict)
             } else {
                 println("Failed to find user dictionary")
             }

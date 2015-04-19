@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MapKit
 
 
 struct StudentInformation: Printable {
@@ -15,8 +16,9 @@ struct StudentInformation: Printable {
     let firstName: String
     let lastName: String
     let mediaURL: String
-    let longitude: Double
-    let latitude: Double
+    let longitude: CLLocationDegrees
+    let latitude: CLLocationDegrees
+    let annotation: MKPointAnnotation
 
     var description: String {
         return "#\(uniqueKey): \(firstName) \(lastName)"
@@ -44,15 +46,19 @@ struct StudentInformation: Printable {
             return nil
         }
         if let s = dictionary["longitude"] as? Double {
-            self.longitude = s
+            self.longitude = CLLocationDegrees(s)
         } else {
             return nil
         }
         if let s = dictionary["latitude"] as? Double {
-            self.latitude = s
+            self.latitude = CLLocationDegrees(s)
         } else {
             return nil
         }
+        annotation = MKPointAnnotation()
+        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        annotation.title = "\(firstName) \(lastName)"
+        annotation.subtitle = mediaURL
     }
 
     /* Helper: Given an array of dictionaries, convert them to an array of StudentInformation objects */
