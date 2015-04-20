@@ -38,6 +38,8 @@ class NetClient {
         task.resume()
     }
 
+    // MARK: -
+    // TODO: limit to 100 and page
     func loadStudentLocations(completionHandler: TaskRequestClosure) {
         let request = NSMutableURLRequest(URL: NSURL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")

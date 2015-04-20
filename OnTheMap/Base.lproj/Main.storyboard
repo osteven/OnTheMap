@@ -17,7 +17,7 @@
         <!--Login VC-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController title="Login VC" id="vXZ-lx-hvc" customClass="ViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Login VC" id="vXZ-lx-hvc" customClass="LoginViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
