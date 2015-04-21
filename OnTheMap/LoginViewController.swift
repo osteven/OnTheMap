@@ -59,9 +59,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         manageLoginButton(false)
     }
 
-    
+
     // MARK: -
-    // MARK: login-related functions
+    // MARK: login-related functions & closures
 
     @IBAction func doLogin() {
         if let userName = loginTextField.text, let password = passwordTextField.text {
@@ -69,10 +69,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             manageUI(false)
             netClient.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
         }
-    }
-
-    private func loadPublicUserData() {
-        netClient.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
     }
 
     @IBAction func udacitySignUp() {
@@ -88,15 +84,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         })
     }
 
-
-    // MARK: -
-    // MARK: login-related closures
-
     /*
-    Error Domain=NSURLErrorDomain Code=-1001 "The request timed out." UserInfo=0x7b70f6e0 {NSErrorFailingURLStringKey=https://www.udacity.com/api/session, NSErrorFailingURLKey=https://www.udacity.com/api/session, NSLocalizedDescription=The request timed out., NSUnderlyingError=0x7bac4b10 "The operation couldn’t be completed. (kCFErrorDomainCFNetwork error -1001.)"}
+        First, restore the UI.  Next, check for Connection Failure.  Third, try to parse the data and
+        report error if it fails.  Fourth, grab the user key and session ID from the parsed data or 
+        report a bad login.  Finally, ask the netClient to request the user data from the Udacity API,
+        passing in the next closure.
     */
-
-
     func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
@@ -108,68 +101,80 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let error = parseError {
-            errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]")
+        if let err = parseError {
+            errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(err.localizedDescription)]")
             return
         }
 
         if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
             self.currentUser.userKey = accountDict["key"] as? String
             self.currentUser.sessionID = sessionDict["id"] as? String
-            dispatch_async(dispatch_get_main_queue(), { self.loadPublicUserData() })
+            netClient.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
             errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]")
         }
     }
 
-
+    /*
+        First, check for Connection Failure.  Next, try to parse the data and report error if it fails.  
+        Third, grab the user name and email from the parsed data.  Next, initiate a netClient background 
+        queue request for the location list, passing in the next closure.  Finally load the Map/List 
+        controller in the main queue.
+    */
     func publicUserDataClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil { // Handle error...
-            println("Failed to get Udacity public user data: \(error)")
+        if error != nil {
+            errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]")
             return
         }
         let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let error = parseError {
-            println("Failed to parse Udacity data: \(error)")
-        } else {
-            if let userDict = topDict!["user"] as? NSDictionary {
-                self.currentUser.lastName = userDict["last_name"] as? String
-                self.currentUser.firstName = userDict["first_name"] as? String
-                if let emailDict = userDict["email"] as? NSDictionary {
-                    self.currentUser.email = emailDict["address"] as? String
-                }
+        if let err = parseError {
+            errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(err.localizedDescription)]")
+            return
+        }
 
-                // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
-                let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
-                dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(self.studentLocationClosure) })
-
-                dispatch_async(dispatch_get_main_queue(), {
-                    let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! UITabBarController
-                    self.presentViewController(controller, animated: true, completion: nil)
-                })
-
+        if let userDict = topDict!["user"] as? NSDictionary {
+            self.currentUser.lastName = userDict["last_name"] as? String
+            self.currentUser.firstName = userDict["first_name"] as? String
+            if let emailDict = userDict["email"] as? NSDictionary {
+                self.currentUser.email = emailDict["address"] as? String
             }
+
+            // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
+            let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
+            dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(self.studentLocationClosure) })
+
+            dispatch_async(dispatch_get_main_queue(), {
+                let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! UITabBarController
+                self.presentViewController(controller, animated: true, completion: nil)
+            })
+        } else {
+            errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]")
         }
     }
 
+    /*
+        First, check for Connection Failure.  Next, try to parse the data and report error if it fails.
+        Finally, grab the top-level user dictionary and pass it to the StudentManager singleton to be parsed.
+    */
     func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil { // Handle error...
-            println("Failed to get Parse API student location data: \(error)")
+        if error != nil {
+            errorAlert("Connection Failure", message: "Failed to get Parse API student location data\n\n[\(error.localizedDescription)]")
             return
         }
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let error = parseError {
-            println("Failed to parse Parse data: \(error)")
+        if let err = parseError {
+            errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(err.localizedDescription)]")
+            return
+        }
+
+        if let userDict = topDict!["results"] as? [[String: AnyObject]] {
+            StudentManager.sharedInstance.load(userDict)
         } else {
-            if let userDict = topDict!["results"] as? [[String: AnyObject]] {
-                StudentManager.sharedInstance.load(userDict)
-            } else {
-                println("Failed to find user dictionary")
-            }
+            errorAlert("Parse Failure", message: "Could not find user dictionary")
         }
     }
 
