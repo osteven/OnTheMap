@@ -28,6 +28,8 @@ class NetClient {
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.HTTPBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
+        // normally timeout is 60 seconds
+        request.timeoutInterval = 30
         let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
         task.resume()
     }
