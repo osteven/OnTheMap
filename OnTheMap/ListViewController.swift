@@ -8,10 +8,10 @@
 
 import UIKit
 
-class ListViewController: UIViewController, UITableViewDataSource {
+class ListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    //    private let studentManager = (UIApplication.sharedApplication().delegate as! AppDelegate).studentManager
 
+    private let pinImage = UIImage(named: "Pin.pdf")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,15 +51,15 @@ class ListViewController: UIViewController, UITableViewDataSource {
             cell!.textLabel?.text = "Error: Students not loaded"
         }
 
-//        cell!.textLabel?.text = meme.topString
-//        if let i = meme.memedImage {
-//            cell!.imageView?.image = i
-//        }
-//
-//        if let detailTextLabel = cell!.detailTextLabel {
-//            detailTextLabel.text = meme.bottomString
-//        }
+        cell!.imageView?.image = pinImage
         return cell!
+    }
+
+
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if let urlstr = StudentManager.sharedInstance.studentAtIndex(indexPath.row)?.mediaURL {
+            UIApplication.sharedApplication().openURL(NSURL(string: urlstr)!)
+        }
     }
 
 }
