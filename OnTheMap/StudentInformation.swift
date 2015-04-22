@@ -25,6 +25,7 @@ struct StudentInformation: Printable {
     }
 
     init?(dictionary: [String: AnyObject]) {
+        //      println("\(dictionary)")
         if let s = dictionary["uniqueKey"] as? String {
             self.uniqueKey = s
         } else {

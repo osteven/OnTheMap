@@ -15,7 +15,7 @@ class NetClient {
 
     private let UDACITY_API_SESSION_URL = "https://www.udacity.com/api/session"
     private let UDACITY_API_USERS_URL = "https://www.udacity.com/api/users/"
-    private let PARSE_API_STUDENT_LOCATIONS_URL = "https://api.parse.com/1/classes/StudentLocation"
+    private let PARSE_API_STUDENT_LOCATIONS_URL = "https://api.parse.com/1/classes/StudentLocationZ"
     private let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
     private let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 

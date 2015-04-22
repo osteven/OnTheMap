@@ -75,15 +75,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         UIApplication.sharedApplication().openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
     }
 
-    private func errorAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        let cancelAction = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
-        alert.addAction(cancelAction)
-        dispatch_async(dispatch_get_main_queue(), {
-            self.presentViewController(alert, animated: true, completion: nil)
-        })
-    }
-
     /*
         First, restore the UI.  Next, check for Connection Failure.  Third, try to parse the data and
         report error if it fails.  Fourth, grab the user key and session ID from the parsed data or 
@@ -94,7 +85,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
         if error != nil {
-            errorAlert("Connection Failure", message: "Failed to connect to Udacity\n\n[\(error.localizedDescription)]")
+            UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
             return
         }
 
@@ -102,7 +93,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
         if let err = parseError {
-            errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(err.localizedDescription)]")
+            UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(err.localizedDescription)]", inViewController: self)
             return
         }
 
@@ -112,7 +103,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             netClient.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
-            errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]")
+            UICommon.errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]", inViewController: self)
         }
     }
 
@@ -124,14 +115,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     */
     func publicUserDataClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         if error != nil {
-            errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]")
+            UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]", inViewController: self)
             return
         }
         let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
         if let err = parseError {
-            errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(err.localizedDescription)]")
+            UICommon.errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(err.localizedDescription)]", inViewController: self)
             return
         }
 
@@ -141,40 +132,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             if let emailDict = userDict["email"] as? NSDictionary {
                 self.currentUser.email = emailDict["address"] as? String
             }
+            let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
 
             // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
             let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
-            dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(self.studentLocationClosure) })
+            dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(controller.studentLocationClosure) })
 
             dispatch_async(dispatch_get_main_queue(), {
-                let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! UITabBarController
                 self.presentViewController(controller, animated: true, completion: nil)
             })
         } else {
-            errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]")
-        }
-    }
-
-    /*
-        First, check for Connection Failure.  Next, try to parse the data and report error if it fails.
-        Finally, grab the top-level user dictionary and pass it to the StudentManager singleton to be parsed.
-    */
-    func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil {
-            errorAlert("Connection Failure", message: "Failed to get Parse API student location data\n\n[\(error.localizedDescription)]")
-            return
-        }
-        var parseError: NSError? = nil
-        let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let err = parseError {
-            errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(err.localizedDescription)]")
-            return
-        }
-
-        if let userDict = topDict!["results"] as? [[String: AnyObject]] {
-            StudentManager.sharedInstance.load(userDict)
-        } else {
-            errorAlert("Parse Failure", message: "Could not find user dictionary")
+            UICommon.errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
         }
     }
 

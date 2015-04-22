@@ -22,6 +22,15 @@ struct UICommon {
         return [refreshButton, pinButton]
     }
 
+    static func errorAlert(title: String, message: String, inViewController: UIViewController) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        dispatch_async(dispatch_get_main_queue(), {
+            inViewController.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+
 
 
     
