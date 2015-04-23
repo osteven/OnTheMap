@@ -21,7 +21,8 @@ struct StudentInformation: Printable {
     let annotation: MKPointAnnotation
 
     var description: String {
-        return "#\(uniqueKey): \(firstName) \(lastName)"
+        // return "#\(uniqueKey): \(firstName) \(lastName)"
+        return "\(firstName) \(lastName)"
     }
 
     init?(dictionary: [String: AnyObject]) {

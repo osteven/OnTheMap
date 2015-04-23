@@ -134,6 +134,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
 
+            // TODO: Remove this
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { self.netClient.countStudentLocations() })
+
+
+
             // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
             let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
             dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(controller.studentLocationClosure) })

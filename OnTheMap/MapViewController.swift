@@ -39,6 +39,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func studentsLoadedNotification(notification: NSNotification) {
         self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
 
+        let num = StudentManager.sharedInstance.numberOfStudents()
+        println("num=\(num)")
+
          /*
         The map does not redraw with the added pins unless I trigger it with this dispatch to
         reset the center.  This idea came from:
@@ -56,6 +59,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.navigationItem.rightBarButtonItems = UICommon.setupNavBar(self)
         if StudentManager.sharedInstance.isLoaded() {
             self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
+        }
+
+        /*
+            The tab bar item for the list tab is not showing up.  It delays several minutes before 
+            drawing as described at this link:
+            http://stackoverflow.com/questions/25995112/tabbaritem-icon-does-not-appear-immediately-in-ios-8
+            I can force it to draw by redundantly setting the image in code.
+        */
+        if let array = self.tabBarController?.tabBar.items {
+            if let firstTabBarItem = array[0] as? UITabBarItem, secondTabBarItem = array[1] as? UITabBarItem {
+                firstTabBarItem.image = UIImage(named: "Map.pdf")
+                secondTabBarItem.image = UIImage(named: "List.pdf")
+            }
         }
     }
 

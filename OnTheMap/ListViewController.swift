@@ -35,7 +35,7 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
     // MARK: -
-    // MARK: UITableViewDataSource support
+    // MARK: Table View DataSource & Delegate support
 
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
