@@ -12,6 +12,7 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
     private let pinImage = UIImage(named: "Pin.pdf")
+    @IBOutlet weak var tableView: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,28 +27,19 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
 
-    // MARK: -
-    //TODO: doRefresh
-
     func doRefresh() {
+        //self.tableView.contentOffset = CGPointMake(0, 0 - self.tableView.contentInset.top);
+        tableView.setContentOffset(CGPointZero, animated: true)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.tableView.reloadData()
+        })
+        let tabsController = self.tabBarController as! MapListViewController
+        tabsController.doRefresh()
     }
-
 
 
     // MARK: -
     // MARK: Table View DataSource & Delegate support
-
-    // http://stackoverflow.com/questions/27079253/load-more-for-uitableview-in-swift
-//    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-//        println("reqrow=\(indexPath.row)")
-//        nextpage = StudentManager.sharedInstance.numberOfStudents() - 5
-//        if indexPath.row == nextpage {
-//            currentPage++
-//            nextpage = elements.count - 5
-//            elements.addObjectsFromArray(allObjectArray.subarrayWithRange(NSMakeRange(currentPage, 20)))
-//            tableView.reloadData()
-//        }
-//    }
 
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

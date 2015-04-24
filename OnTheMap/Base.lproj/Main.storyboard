@@ -195,6 +195,9 @@
                     <navigationItem key="navigationItem" title="On The Map" id="3LC-N4-ceV">
                         <barButtonItem key="leftBarButtonItem" title="Logout" id="LAc-g8-dQs"/>
                     </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="YWY-2C-CM6" id="94z-jj-OkI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="23K-WK-vtG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

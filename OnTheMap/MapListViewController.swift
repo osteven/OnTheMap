@@ -18,10 +18,15 @@ class MapListViewController: UITabBarController {
      }
 
 
-
+    func doRefresh() {
+        StudentManager.sharedInstance.removeAll()
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), {
+            NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure)
+        })
+    }
 
     /*
-    This Closure is for a query that returns both the count of all the student locations, and the most 
+    This Closure is for a query that returns both the count of all the student locations, and the most
     recent 100 student locations.
 
     First, check for Connection Failure.  Next, try to parse the data and report an error if it fails.

@@ -84,10 +84,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
 
 
-    // MARK: -
-    //TODO: doRefresh
-
     func doRefresh() {
+        mapView.removeAnnotations(mapView.annotations)
+        let tabsController = self.tabBarController as! MapListViewController
+        tabsController.doRefresh()
     }
     
 

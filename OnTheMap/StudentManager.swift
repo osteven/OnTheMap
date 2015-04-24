@@ -58,6 +58,11 @@ class StudentManager: Printable {
         return returnTheseAnnotations
     }
 
-
+    func removeAll() {
+        countOfAllStudentLocations = nil
+        countOfReturnedStudentLocations = 0
+        newAnnotationsArray.removeAll()
+        studentInfoArray.removeAll()
+    }
 
 }
