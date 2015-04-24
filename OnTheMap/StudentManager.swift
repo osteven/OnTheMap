@@ -15,45 +15,49 @@ class StudentManager: Printable {
 
     static let sharedInstance = StudentManager()
 
-    private var studentInfoArray: [StudentInformation]? = nil
-    private var annotationsArray: [MKPointAnnotation]? = nil
+    private var studentInfoArray = [StudentInformation]()
+    private var newAnnotationsArray = [MKPointAnnotation]()
 
+    var countOfAllStudentLocations: Int? = nil
+    var countOfReturnedStudentLocations = 0
 
     var description: String {
         var s = ""
-        if studentInfoArray == nil { return "" }
-        for si in studentInfoArray! { s += "\(si)\n" }
+        for si in studentInfoArray { s += "\(si)\n" }
         return s
     }
 
     private init() {}
 
-    func load(dictionary: [[String: AnyObject]]) {
-        self.studentInfoArray = StudentInformation.studentsFromResults(dictionary)
+    func load(dictionary: [[String: AnyObject]], requestedBatchSize: Int) {
+        countOfReturnedStudentLocations += requestedBatchSize
+        let nextBatch = StudentInformation.studentsFromResults(dictionary)
+        newAnnotationsArray += studentInfoArray.map { return $0.annotation }
+        self.studentInfoArray += nextBatch
         NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
     }
 
-    func isLoaded() -> Bool { return self.studentInfoArray != nil }
+    func isLoaded() -> Bool { return self.studentInfoArray.count > 0 }
+    func canRetrieveMoreStudentLocations() -> Bool {
+        if countOfAllStudentLocations == nil { return true }
+        return countOfReturnedStudentLocations <= countOfAllStudentLocations
+    }
 
     func numberOfStudents() -> Int {
-        if studentInfoArray == nil { return 0 }
-        return studentInfoArray!.count
+        return studentInfoArray.count
     }
 
     func studentAtIndex(row: Int) -> StudentInformation? {
-        if studentInfoArray == nil { return nil }
-        return studentInfoArray![row]
+        if studentInfoArray.count == 0 { return nil }
+        return studentInfoArray[row]
     }
 
     func getAnnotations() -> [MKPointAnnotation]? {
-        if studentInfoArray == nil { return nil }
-        if annotationsArray == nil {
-            annotationsArray = [MKPointAnnotation]()
-            for student in studentInfoArray! {
-                annotationsArray!.append(student.annotation)
-            }
-        }
-        return annotationsArray
+        let returnTheseAnnotations = newAnnotationsArray
+        newAnnotationsArray.removeAll()
+        return returnTheseAnnotations
     }
+
+
 
 }

@@ -39,8 +39,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func studentsLoadedNotification(notification: NSNotification) {
         self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
 
-        let num = StudentManager.sharedInstance.numberOfStudents()
-        println("num=\(num)")
+//        let num = StudentManager.sharedInstance.numberOfStudents()
+//        println("num=\(num)")
 
          /*
         The map does not redraw with the added pins unless I trigger it with this dispatch to
@@ -119,10 +119,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             <Snapshotting a view that has not been rendered results in an empty snapshot.
             Ensure your view has been rendered at least once before snapshotting or snapshot 
             after screen updates.>
-            It seems to be a similar problem to this and one of the solutions seems to work:
+            It seems to be a similar problem to this:
             http://stackoverflow.com/questions/25884801/ios-8-snapshotting-a-view-that-has-not-been-rendered-results-in-an-empty-snapsho
+            
+            Update: This solution does not work after all.
             */
-            let delayInSeconds = Int64(0.1 * Double(NSEC_PER_SEC));
+            let delayInSeconds = Int64(0.4 * Double(NSEC_PER_SEC));
             dispatch_time(DISPATCH_TIME_NOW, delayInSeconds);
             dispatch_async(dispatch_get_main_queue(), {
                 app.openURL(NSURL(string: annotationView.annotation.subtitle!)!)

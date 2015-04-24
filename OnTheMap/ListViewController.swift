@@ -37,6 +37,18 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: -
     // MARK: Table View DataSource & Delegate support
 
+    // http://stackoverflow.com/questions/27079253/load-more-for-uitableview-in-swift
+//    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+//        println("reqrow=\(indexPath.row)")
+//        nextpage = StudentManager.sharedInstance.numberOfStudents() - 5
+//        if indexPath.row == nextpage {
+//            currentPage++
+//            nextpage = elements.count - 5
+//            elements.addObjectsFromArray(allObjectArray.subarrayWithRange(NSMakeRange(currentPage, 20)))
+//            tableView.reloadData()
+//        }
+//    }
+
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return StudentManager.sharedInstance.numberOfStudents()

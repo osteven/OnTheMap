@@ -13,6 +13,9 @@ public typealias TaskRequestClosure = (data: NSData!, response: NSURLResponse!, 
 
 class NetClient {
 
+    static let sharedInstance = NetClient()
+
+
     // MARK: -
     // MARK: constant properties
     private let UDACITY_API_SESSION_URL = "https://www.udacity.com/api/session"
@@ -21,9 +24,12 @@ class NetClient {
     private let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
     private let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 
+    static let PARSE_API_BATCH_SIZE = 20        // for debugging
+
     private let session = NSURLSession.sharedSession()
 
 
+    private init() {}
 
     // MARK: -
     // MARK: helper class function
@@ -69,11 +75,17 @@ class NetClient {
     // TODO: limit to 100 and page
 
     // MARK: -
-    // MARK: Parse API Calls
+    // MARK: Parse API Call
     func loadStudentLocations(completionHandler: TaskRequestClosure) {
 
         var parameters = [String: AnyObject]()
+        parameters["count"] = "1"
         parameters["order"] = "-createdAt"          // sort by create timestamp descending
+        if NetClient.PARSE_API_BATCH_SIZE != 100 { parameters["limit"] = NetClient.PARSE_API_BATCH_SIZE }
+        if StudentManager.sharedInstance.canRetrieveMoreStudentLocations() {
+            parameters["skip"] = StudentManager.sharedInstance.countOfReturnedStudentLocations
+        }
+
         let urlString = PARSE_API_STUDENT_LOCATIONS_URL + NetClient.escapedParameters(parameters)
 
         let request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
@@ -84,43 +96,7 @@ class NetClient {
     }
 
 
-    // MARK: -
-    // MARK: Development-only helper routines
-    func countStudentLocations() {
-        var parameters = [String: AnyObject]()
-        parameters["count"] = "1"
-        parameters["limit"] = "0"
 
-        let urlString = PARSE_API_STUDENT_LOCATIONS_URL + NetClient.escapedParameters(parameters)
-
-        let request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
-        request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
-        request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
-        let task = session.dataTaskWithRequest(request, completionHandler: countStudentClosure)
-        task.resume()
-    }
-
-
-    /*
-    topDict=Optional({ count = 127; results = ( ); })
-`   */
-    private func countStudentClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil {
-            println("countStudentClosure err=\(error.localizedDescription)")
-            return
-        }
-        var parseError: NSError? = nil
-        let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let err = parseError {
-            println("Parse Failure err=\(error.localizedDescription)")
-           return
-        }
-        if let count = topDict!["count"] as? Int {
-            println("count=\(count)")
-            return
-        }
-        println("Parse Count not found")
-    }
 
 
 

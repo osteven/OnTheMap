@@ -21,8 +21,12 @@ class MapListViewController: UITabBarController {
 
 
     /*
-    First, check for Connection Failure.  Next, try to parse the data and report error if it fails.
-    Finally, grab the top-level user dictionary and pass it to the StudentManager singleton to be parsed.
+    This Closure is for a query that returns both the count of all the student locations, and the most 
+    recent 100 student locations.
+
+    First, check for Connection Failure.  Next, try to parse the data and report an error if it fails.
+    Finally, grab the count first, then the top-level user dictionary and pass it to the StudentManager 
+    singleton to be parsed
     */
     func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         if error != nil {
@@ -35,11 +39,26 @@ class MapListViewController: UITabBarController {
             UICommon.errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(err.localizedDescription)]", inViewController: self)
             return
         }
+        //   println("topDict=\(topDict)")
 
-        if let userDict = topDict!["results"] as? [[String: AnyObject]] {
-            if userDict.count > 0 {
-                StudentManager.sharedInstance.load(userDict)
-                return
+        /*
+            Parse returns a results structure that looks like this:
+                topDict=Optional({ count = 127; results = ( ... ) })
+        */
+        if let count = topDict!["count"] as? Int {
+            StudentManager.sharedInstance.countOfAllStudentLocations = count
+            //      println("count=\(count)")
+
+            if let userDict = topDict!["results"] as? [[String: AnyObject]] {
+                if userDict.count > 0 {
+                    StudentManager.sharedInstance.load(userDict, requestedBatchSize: NetClient.PARSE_API_BATCH_SIZE)
+
+                    if StudentManager.sharedInstance.canRetrieveMoreStudentLocations() {
+                        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure) })
+                    }
+
+                    return
+                }
             }
         }
         UICommon.errorAlert("Parse Failure", message: "The Parse Server did not return a valid user dictionary", inViewController: self)

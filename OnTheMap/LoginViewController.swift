@@ -16,7 +16,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
 
-    private let netClient = NetClient()
     private let currentUser = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
 
 
@@ -67,7 +66,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         if let userName = loginTextField.text, let password = passwordTextField.text {
             UIApplication.sharedApplication().networkActivityIndicatorVisible = true
             manageUI(false)
-            netClient.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
+            NetClient.sharedInstance.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
         }
     }
 
@@ -78,7 +77,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     /*
         First, restore the UI.  Next, check for Connection Failure.  Third, try to parse the data and
         report error if it fails.  Fourth, grab the user key and session ID from the parsed data or 
-        report a bad login.  Finally, ask the netClient to request the user data from the Udacity API,
+        report a bad login.  Finally, ask the NetClient to request the user data from the Udacity API,
         passing in the next closure.
     */
     func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
@@ -100,7 +99,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
             self.currentUser.userKey = accountDict["key"] as? String
             self.currentUser.sessionID = sessionDict["id"] as? String
-            netClient.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
+            NetClient.sharedInstance.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
             UICommon.errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]", inViewController: self)
@@ -109,7 +108,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
     /*
         First, check for Connection Failure.  Next, try to parse the data and report error if it fails.  
-        Third, grab the user name and email from the parsed data.  Next, initiate a netClient background 
+        Third, grab the user name and email from the parsed data.  Next, initiate a NetClient background
         queue request for the location list, passing in the next closure.  Finally load the Map/List 
         controller in the main queue.
     */
@@ -134,18 +133,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
 
-            // TODO: Remove this
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { self.netClient.countStudentLocations() })
+            /* 
+                Use a background queue to query the Parse API.  It queries both the total count of all Student
+                Locations, the first 100 Student Locations.  At the same time on the main queue, load the
+                Map & List tab controller.  Here is how I learned to use background queues:
+                http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
+            */
 
-
-
-            // http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
-            let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
-            dispatch_async(backgroundQueue, { self.netClient.loadStudentLocations(controller.studentLocationClosure) })
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { NetClient.sharedInstance.loadStudentLocations(controller.studentLocationClosure) })
 
             dispatch_async(dispatch_get_main_queue(), {
                 self.presentViewController(controller, animated: true, completion: nil)
             })
+
         } else {
             UICommon.errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
         }
