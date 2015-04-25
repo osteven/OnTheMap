@@ -25,38 +25,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.configureUI()
-    }
 
-
-    func configureUI() {
-        /* Configure background gradient */
-        self.view.backgroundColor = UIColor.clearColor()
-        let colorTop = UIColor(red: 0.984, green: 0.605, blue: 0.168, alpha: 1.0).CGColor
-        let colorBottom = UIColor(red: 0.984, green: 0.438, blue: 0.129, alpha: 1.0).CGColor
-        var backgroundGradient = CAGradientLayer()
-        backgroundGradient.colors = [colorTop, colorBottom]
-        backgroundGradient.locations = [0.0, 1.0]
-        backgroundGradient.frame = self.view.frame
-        self.view.layer.insertSublayer(backgroundGradient, atIndex: 0)
-
-
-        // spacing from here: http://stackoverflow.com/questions/7565645/indent-the-text-in-a-uitextfield
-        let loginSpacer = UIView(frame: CGRectMake(0, 0, 10, 10))
-        loginTextField.leftViewMode = .Always
-        loginTextField.leftView = loginSpacer
-        let passSpacer = UIView(frame: CGRectMake(0, 0, 10, 10))
-        passwordTextField.leftViewMode = .Always
-        passwordTextField.leftView = passSpacer
+        UICommon.setGradientForView(self.view)
+        UICommon.setUpSpacerForTextField(loginTextField)
+        UICommon.setUpSpacerForTextField(passwordTextField)
 
         loginTextField.delegate = self
         passwordTextField.delegate = self
-
-        loginTextField.alpha = 0.6
-        passwordTextField.alpha = 0.6
-
         manageLoginButton(false)
-    }
+}
+
+
 
 
     // MARK: -
@@ -82,8 +61,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     */
     func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
         if error != nil {
+            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
             UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
             return
         }
@@ -92,6 +71,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         var parseError: NSError? = nil
         let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
         if let err = parseError {
+            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
             UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(err.localizedDescription)]", inViewController: self)
             return
         }
@@ -102,6 +82,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             NetClient.sharedInstance.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
+            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
             UICommon.errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]", inViewController: self)
         }
     }

@@ -44,7 +44,6 @@ class MapListViewController: UITabBarController {
             UICommon.errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(err.localizedDescription)]", inViewController: self)
             return
         }
-        //   println("topDict=\(topDict)")
 
         /*
             Parse returns a results structure that looks like this:
@@ -52,7 +51,6 @@ class MapListViewController: UITabBarController {
         */
         if let count = topDict!["count"] as? Int {
             StudentManager.sharedInstance.countOfAllStudentLocations = count
-            //      println("count=\(count)")
 
             if let userDict = topDict!["results"] as? [[String: AnyObject]] {
                 if userDict.count > 0 {

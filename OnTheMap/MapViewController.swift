@@ -22,9 +22,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         super.init(coder: aDecoder)
 
         /*
-        Retrieving the student information happens in a background thread at the same time this view is 
-        being loaded.  This view usually loads first, so we want to be notified when the background 
-        thread finishes.
+        Retrieving the student information happens in a background thread at the same time this 
+        view is being loaded.  This view usually loads first, so we want to be notified when 
+        the background thread finishes.
         */
         NSNotificationCenter.defaultCenter().addObserver(self,
             selector: "studentsLoadedNotification:",
@@ -38,9 +38,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     func studentsLoadedNotification(notification: NSNotification) {
         self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
-
-//        let num = StudentManager.sharedInstance.numberOfStudents()
-//        println("num=\(num)")
 
          /*
         The map does not redraw with the added pins unless I trigger it with this dispatch to
@@ -78,8 +75,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
 
     // MARK: -
-    //TODO: doPin
+    // MARK: handle header buttons
+
     func doPin() {
+        let controller = self.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
+        self.presentViewController(controller, animated: true, completion: nil)
 
     }
 

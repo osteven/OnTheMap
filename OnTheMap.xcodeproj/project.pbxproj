@@ -22,6 +22,7 @@
 		B0CE28281AE1D4C3004ED171 /* UICommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28271AE1D4C3004ED171 /* UICommon.swift */; };
 		B0CE282B1AE4085D004ED171 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28291AE4085D004ED171 /* ListViewController.swift */; };
 		B0EBA6091AE8241E0080FE76 /* MapListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBA6081AE8241E0080FE76 /* MapListViewController.swift */; };
+		B0EBA60B1AEAC2360080FE76 /* InformationPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBA60A1AEAC2360080FE76 /* InformationPostViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		B0CE28271AE1D4C3004ED171 /* UICommon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICommon.swift; sourceTree = "<group>"; };
 		B0CE28291AE4085D004ED171 /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		B0EBA6081AE8241E0080FE76 /* MapListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapListViewController.swift; sourceTree = "<group>"; };
+		B0EBA60A1AEAC2360080FE76 /* InformationPostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InformationPostViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				B0CE28271AE1D4C3004ED171 /* UICommon.swift */,
 				B0CE28291AE4085D004ED171 /* ListViewController.swift */,
 				B0EBA6081AE8241E0080FE76 /* MapListViewController.swift */,
+				B0EBA60A1AEAC2360080FE76 /* InformationPostViewController.swift */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 				B0EBA6091AE8241E0080FE76 /* MapListViewController.swift in Sources */,
 				B0CE282B1AE4085D004ED171 /* ListViewController.swift in Sources */,
 				B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */,
+				B0EBA60B1AEAC2360080FE76 /* InformationPostViewController.swift in Sources */,
 				B035E2B71ADF25B400D13596 /* AppDelegate.swift in Sources */,
 				B0CE28261AE18B6D004ED171 /* MapViewController.swift in Sources */,
 			);

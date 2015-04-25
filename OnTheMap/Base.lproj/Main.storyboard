@@ -5,7 +5,12 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <mutableArray key="Roboto-Medium.ttf">
+            <string>Roboto-Medium</string>
+        </mutableArray>
         <mutableArray key="Roboto-Regular.ttf">
+            <string>Roboto-Regular</string>
+            <string>Roboto-Regular</string>
             <string>Roboto-Regular</string>
             <string>Roboto-Regular</string>
             <string>Roboto-Regular</string>
@@ -234,6 +239,101 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dO5-Gy-MeQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1300" y="-243"/>
+        </scene>
+        <!--Information Posting View-->
+        <scene sceneID="AOq-um-vGN">
+            <objects>
+                <viewController storyboardIdentifier="InformationPostingVC" title="Information Posting View" id="0uU-t9-3Qv" customClass="InformationPostViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="6Jn-ib-pqJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="V2E-nj-BIi"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="wcm-zh-OBb">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gHx-dq-eey">
+                                <rect key="frame" x="16" y="28" width="568" height="150"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ao-Xn-6VQ">
+                                        <rect key="frame" x="8" y="117" width="552" height="34"/>
+                                        <color key="backgroundColor" red="0.93725490199999995" green="0.24313725489999999" blue="0.031372549020000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <fontDescription key="fontDescription" name="Roboto-Regular" family="Roboto" pointSize="18"/>
+                                        <state key="normal" title="Find on the Map">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="findOnTheMap" destination="0uU-t9-3Qv" eventType="touchUpInside" id="Syq-da-q1p"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where are you studying today?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LLl-Wh-0ZA">
+                                        <rect key="frame" x="0.0" y="0.0" width="568" height="72"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="72" id="U3o-Om-dZe"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="28"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" clipsSubviews="YES" alpha="0.59999999999999998" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OwT-R7-IDm">
+                                        <rect key="frame" x="8" y="80" width="552" height="29"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" name="Roboto-Regular" family="Roboto" pointSize="24"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="OwT-R7-IDm" secondAttribute="trailing" constant="8" id="8cq-nb-0rw"/>
+                                    <constraint firstAttribute="centerX" secondItem="2ao-Xn-6VQ" secondAttribute="centerX" id="AeT-qV-Gyv"/>
+                                    <constraint firstItem="OwT-R7-IDm" firstAttribute="leading" secondItem="2ao-Xn-6VQ" secondAttribute="leading" id="PrR-MG-I5H"/>
+                                    <constraint firstAttribute="centerY" secondItem="2ao-Xn-6VQ" secondAttribute="centerY" constant="-20" id="aU3-CN-djn"/>
+                                    <constraint firstItem="OwT-R7-IDm" firstAttribute="leading" secondItem="gHx-dq-eey" secondAttribute="leading" constant="8" id="bQk-zU-vCh"/>
+                                    <constraint firstItem="LLl-Wh-0ZA" firstAttribute="leading" secondItem="gHx-dq-eey" secondAttribute="leading" id="dnf-RZ-kQ6"/>
+                                    <constraint firstItem="2ao-Xn-6VQ" firstAttribute="top" secondItem="OwT-R7-IDm" secondAttribute="bottom" constant="8" id="hOU-O4-CIl"/>
+                                    <constraint firstItem="OwT-R7-IDm" firstAttribute="top" secondItem="LLl-Wh-0ZA" secondAttribute="bottom" constant="8" id="k2A-Yp-Ah4"/>
+                                    <constraint firstAttribute="trailing" secondItem="LLl-Wh-0ZA" secondAttribute="trailing" id="mmf-Ah-cPZ"/>
+                                    <constraint firstItem="OwT-R7-IDm" firstAttribute="trailing" secondItem="2ao-Xn-6VQ" secondAttribute="trailing" id="oYZ-ee-D1A"/>
+                                    <constraint firstAttribute="height" constant="150" id="ptU-NO-Yl9"/>
+                                    <constraint firstItem="LLl-Wh-0ZA" firstAttribute="top" secondItem="gHx-dq-eey" secondAttribute="top" id="pvp-i7-HKm"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="aU3-CN-djn"/>
+                                    </mask>
+                                </variation>
+                            </view>
+                            <mapView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="pav-mx-OeT">
+                                <rect key="frame" x="16" y="186" width="568" height="401"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.66003895990000006" green="0.78317212300000005" blue="0.70319773620000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="pav-mx-OeT" firstAttribute="trailing" secondItem="wcm-zh-OBb" secondAttribute="trailingMargin" id="Asq-73-e5Q"/>
+                            <constraint firstAttribute="centerY" secondItem="pav-mx-OeT" secondAttribute="centerY" constant="-111.5" id="N65-rO-3Ta"/>
+                            <constraint firstItem="pav-mx-OeT" firstAttribute="top" secondItem="gHx-dq-eey" secondAttribute="bottom" constant="8" id="NzJ-0C-kHx"/>
+                            <constraint firstItem="gHx-dq-eey" firstAttribute="trailing" secondItem="wcm-zh-OBb" secondAttribute="trailingMargin" id="SKG-UD-iEl"/>
+                            <constraint firstItem="pav-mx-OeT" firstAttribute="leading" secondItem="wcm-zh-OBb" secondAttribute="leadingMargin" id="WKx-YI-Lcp"/>
+                            <constraint firstItem="gHx-dq-eey" firstAttribute="leading" secondItem="wcm-zh-OBb" secondAttribute="leadingMargin" id="ZzB-HH-gO4"/>
+                            <constraint firstItem="gHx-dq-eey" firstAttribute="top" secondItem="6Jn-ib-pqJ" secondAttribute="bottom" constant="8" id="a2O-OD-re8"/>
+                            <constraint firstItem="V2E-nj-BIi" firstAttribute="top" secondItem="pav-mx-OeT" secondAttribute="bottom" constant="13" id="srX-30-rUn"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="N65-rO-3Ta"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="findOnMapButton" destination="2ao-Xn-6VQ" id="vFh-TO-eJW"/>
+                        <outlet property="findOnMapView" destination="gHx-dq-eey" id="7xD-IS-Tkz"/>
+                        <outlet property="mapView" destination="pav-mx-OeT" id="EL6-iA-WBo"/>
+                        <outlet property="whereStudyingTextField" destination="OwT-R7-IDm" id="yLT-wG-eSv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iQd-tH-TPq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2008" y="18"/>
         </scene>
         <!--Map List View Controller-->
         <scene sceneID="fXl-F6-D9P">

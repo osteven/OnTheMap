@@ -26,7 +26,6 @@ struct StudentInformation: Printable {
     }
 
     init?(dictionary: [String: AnyObject]) {
-        //      println("\(dictionary)")
         if let s = dictionary["uniqueKey"] as? String {
             self.uniqueKey = s
         } else {
@@ -81,6 +80,21 @@ struct StudentInformation: Printable {
 }
 
 /*
+
+[
+uniqueKey: 231757155,
+createdAt: 2015-04-24T17:52:57.962Z,
+updatedAt: 2015-04-24T17:52:57.962Z,
+objectId: DKkCLsxkvv,
+
+latitude: 41.02653,
+longitude: -73.62855, 
+firstName: James
+lastName: Gilchrist,
+mediaURL: http://www.bevellabs.com,
+mapString: Greenwich, CT, United States,
+]
+
 "mediaURL" : "http:\/\/www.linkedin.com\/in\/jessicauelmen\/en",
 "firstName" : "Jessica",
 "longitude" : -82.75676799999999,
