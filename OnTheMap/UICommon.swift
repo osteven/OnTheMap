@@ -9,9 +9,10 @@
 import Foundation
 import UIKit
 
+public typealias UIAlertActionClosure = (UIAlertAction!) -> Void
+
+
 struct UICommon {
-
-
 
 
     static func setupNavBar(callingViewController: UIViewController) -> [UIBarButtonItem] {
@@ -22,13 +23,27 @@ struct UICommon {
         return [refreshButton, pinButton]
     }
 
-    static func errorAlert(title: String, message: String, inViewController: UIViewController) {
+    static func errorAlertWithHandler(title: String, message: String, inViewController: UIViewController, handler: UIAlertActionClosure?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        let cancelAction = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: handler)
         alert.addAction(cancelAction)
         dispatch_async(dispatch_get_main_queue(), {
             inViewController.presentViewController(alert, animated: true, completion: nil)
         })
+    }
+
+
+    static func errorAlert(title: String, message: String, inViewController: UIViewController, completion: (() -> Void)?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        dispatch_async(dispatch_get_main_queue(), {
+            inViewController.presentViewController(alert, animated: true, completion: completion)
+        })
+    }
+
+    static func errorAlert(title: String, message: String, inViewController: UIViewController) {
+        errorAlert(title, message: message, inViewController: inViewController, completion: nil)
     }
 
     static func setGradientForView(view: UIView) {

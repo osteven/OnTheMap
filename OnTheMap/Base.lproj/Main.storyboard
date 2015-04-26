@@ -332,8 +332,8 @@
                                             </mask>
                                         </variation>
                                     </label>
-                                    <textField opaque="NO" clipsSubviews="YES" alpha="0.59999999999999998" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="atO-Eh-1PU">
-                                        <rect key="frame" x="8" y="78" width="552" height="32"/>
+                                    <textField opaque="NO" clipsSubviews="YES" alpha="0.59999999999999998" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="atO-Eh-1PU">
+                                        <rect key="frame" x="8" y="78" width="524" height="32"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="32" id="oia-QS-oop"/>
@@ -348,7 +348,7 @@
                                             <constraint firstAttribute="width" constant="250" id="GTD-oO-amu"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="Roboto-Regular" family="Roboto" pointSize="18"/>
-                                        <state key="normal" title="Save">
+                                        <state key="normal" title="Submit">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -382,14 +382,31 @@
                                             <action selector="linkBrowseAction" destination="0uU-t9-3Qv" eventType="touchUpInside" id="34z-7C-GEz"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xPj-4n-tm7">
+                                        <rect key="frame" x="536" y="78" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="6vl-Mz-AgE"/>
+                                            <constraint firstAttribute="height" constant="32" id="AGb-Rf-qad"/>
+                                        </constraints>
+                                        <state key="normal" title="Check Button" image="Check"/>
+                                        <connections>
+                                            <action selector="checkAction" destination="0uU-t9-3Qv" eventType="touchUpInside" id="95L-Ba-XXg"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="0.8807562592" blue="0.01258922423" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="xPj-4n-tm7" secondAttribute="trailing" id="3sM-0H-IKv"/>
+                                    <constraint firstItem="9tY-ZS-Fr8" firstAttribute="width" secondItem="8sh-4B-kar" secondAttribute="width" id="55w-iu-x0k"/>
                                     <constraint firstItem="8sh-4B-kar" firstAttribute="leading" secondItem="9tY-ZS-Fr8" secondAttribute="trailing" constant="2" id="5zm-3P-xw7"/>
+                                    <constraint firstItem="xPj-4n-tm7" firstAttribute="leading" secondItem="atO-Eh-1PU" secondAttribute="trailing" constant="4" id="9Ob-T2-3nc"/>
                                     <constraint firstItem="8sh-4B-kar" firstAttribute="trailing" secondItem="atO-Eh-1PU" secondAttribute="trailing" id="H0V-mq-yOv"/>
+                                    <constraint firstItem="xPj-4n-tm7" firstAttribute="leading" secondItem="OkE-Am-hnp" secondAttribute="trailing" constant="-40" id="JWH-eN-gf1"/>
                                     <constraint firstItem="8sh-4B-kar" firstAttribute="top" secondItem="atO-Eh-1PU" secondAttribute="bottom" constant="6" id="P0R-hm-ITv"/>
                                     <constraint firstItem="OkE-Am-hnp" firstAttribute="top" secondItem="NRz-II-rHd" secondAttribute="top" id="R22-lg-3uc"/>
+                                    <constraint firstAttribute="trailing" secondItem="8sh-4B-kar" secondAttribute="trailing" constant="8" id="RKr-nV-fqD"/>
                                     <constraint firstItem="8sh-4B-kar" firstAttribute="leading" secondItem="atO-Eh-1PU" secondAttribute="leading" id="XDp-aN-stv"/>
+                                    <constraint firstItem="xPj-4n-tm7" firstAttribute="top" secondItem="OkE-Am-hnp" secondAttribute="bottom" constant="6" id="ZrZ-5D-bk5"/>
                                     <constraint firstAttribute="centerX" secondItem="8sh-4B-kar" secondAttribute="centerX" id="Zy1-W9-Dcc"/>
                                     <constraint firstItem="9tY-ZS-Fr8" firstAttribute="top" secondItem="atO-Eh-1PU" secondAttribute="bottom" constant="6" id="fNM-2q-5bP"/>
                                     <constraint firstAttribute="height" constant="150" id="fau-ck-ras"/>
@@ -398,13 +415,20 @@
                                     <constraint firstAttribute="trailing" secondItem="OkE-Am-hnp" secondAttribute="trailing" id="mM9-x2-RGJ"/>
                                     <constraint firstAttribute="trailing" secondItem="atO-Eh-1PU" secondAttribute="trailing" constant="8" id="qJ6-kh-MCb"/>
                                     <constraint firstItem="OkE-Am-hnp" firstAttribute="leading" secondItem="NRz-II-rHd" secondAttribute="leading" id="r6v-B8-GQv"/>
+                                    <constraint firstItem="8sh-4B-kar" firstAttribute="top" secondItem="xPj-4n-tm7" secondAttribute="bottom" constant="6" id="rCo-C5-PL6"/>
                                     <constraint firstItem="atO-Eh-1PU" firstAttribute="leading" secondItem="NRz-II-rHd" secondAttribute="leading" constant="8" id="tYP-lr-qy3"/>
+                                    <constraint firstItem="xPj-4n-tm7" firstAttribute="leading" secondItem="atO-Eh-1PU" secondAttribute="trailing" constant="4" id="u9x-KL-X1b"/>
                                     <constraint firstItem="8sh-4B-kar" firstAttribute="width" secondItem="9tY-ZS-Fr8" secondAttribute="width" id="vj6-LG-lLs"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">
+                                        <exclude reference="qJ6-kh-MCb"/>
+                                        <exclude reference="H0V-mq-yOv"/>
                                         <exclude reference="XDp-aN-stv"/>
                                         <exclude reference="Zy1-W9-Dcc"/>
+                                        <exclude reference="vj6-LG-lLs"/>
+                                        <exclude reference="JWH-eN-gf1"/>
+                                        <exclude reference="u9x-KL-X1b"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -513,6 +537,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Check" width="66" height="66"/>
         <image name="List" width="32" height="32"/>
         <image name="Map" width="32" height="32"/>
         <image name="UdacityGraphic" width="256" height="256"/>

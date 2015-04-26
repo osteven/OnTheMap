@@ -66,9 +66,8 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
 
-    //TODO: doPin
-    func doPin() {
-
+     func doPin() {
+        InformationPostViewController.presentWithParent(self)
     }
 
 

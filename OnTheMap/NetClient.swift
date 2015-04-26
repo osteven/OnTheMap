@@ -24,7 +24,7 @@ class NetClient {
     private let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
     private let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 
-    static let PARSE_API_BATCH_SIZE = 20        // for debugging
+    static let PARSE_API_BATCH_SIZE = 100        // for debugging
 
     private let session = NSURLSession.sharedSession()
 

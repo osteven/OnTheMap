@@ -14,7 +14,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
 
     // MARK: -
-    // MARK: properties
+    // MARK: Properties
     @IBOutlet weak var findOnMapView: UIView!
     @IBOutlet weak var whereStudyingTextField: UITextField!
     @IBOutlet weak var mapView: MKMapView!
@@ -26,22 +26,31 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     @IBOutlet weak var linkBrowseButton: UIButton!
 
     private var currentURLStringIsValid = false
+    private var failedWebViewLoadWithError = false
 
     // MARK: -
-    // MARK: loading
+    // MARK: Loading
+
+    static func presentWithParent(parent: UIViewController) {
+        let controller = parent.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
+        parent.presentViewController(controller, animated: true, completion: nil)
+    }
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        //testValidURLs()
+
         self.findOnMapView.alpha = 1.0
         self.findOnMapView.backgroundColor = UIColor.clearColor()
         self.mapView.hidden = true
         self.webView.hidden = true
         self.webView.delegate = self
         self.associatedLinkView.backgroundColor = UIColor.clearColor()
-        self.swapViewsFindIsActive(true)
+        self.swapLinkAndFindView(true)
         manageFindButton(false)
         UICommon.setGradientForView(self.view)
         UICommon.setUpSpacerForTextField(whereStudyingTextField)
+        UICommon.setUpSpacerForTextField(linkTextField)
         linkTextField.delegate = self
         whereStudyingTextField.delegate = self
         whereStudyingTextField.becomeFirstResponder()
@@ -54,19 +63,26 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange,
         replacementString string: String) -> Bool {
-            if textField != whereStudyingTextField { return true }
+            if textField == linkTextField {
+                // if the entered link is not validated, disable the submit button
+                manageUIForURLString(false)
+                return true
+            }
 
+            // if the location find string is empty, disable the find location button
             var newText: NSString = whereStudyingTextField.text
             newText = newText.stringByReplacingCharactersInRange(range, withString: string)
             manageFindButton(newText.length > 0)
             return true
     }
 
+    @IBAction func checkAction() {
+        triggerWebViewForURLCheck(linkTextField.text)
+    }
 
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if textField == linkTextField {
-            if self.webView.hidden { linkBrowseAction() }
-            checkValidURLString(linkTextField.text)
+            triggerWebViewForURLCheck(linkTextField.text)
         } else if textField == whereStudyingTextField  {
             if findOnMapButton.enabled { findOnTheMap() }
         }
@@ -78,7 +94,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         if enable {findOnMapButton.alpha = 1.0 } else { findOnMapButton.alpha = 0.2 }
     }
 
-    private func swapViewsFindIsActive(enableFind: Bool) {
+    private func swapLinkAndFindView(enableFind: Bool) {
         if enableFind {
             self.findOnMapView.hidden = false
             self.associatedLinkView.hidden = true
@@ -87,77 +103,121 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             self.associatedLinkView.hidden = false
             if linkTextField.text == "" { linkTextField.text = "http://" }
             linkTextField.becomeFirstResponder()
+            manageUIForURLString(false)
         }
     }
 
 
-    @IBAction func linkBrowseAction() {
-        if linkBrowseButton.currentTitle == "Hide Browser" {
+
+    private func showHideBrowserButton(shouldShow: Bool) {
+        if shouldShow {
             linkBrowseButton.setTitle("Show Browser", forState: .Normal)
             self.mapView.hidden = false
             self.webView.hidden = true
         } else {
-            linkTextField.becomeFirstResponder()
             linkBrowseButton.setTitle("Hide Browser", forState: .Normal)
             self.mapView.hidden = true
             self.webView.hidden = false
-         }
+        }
+    }
+
+    @IBAction func linkBrowseAction() {
+        showHideBrowserButton((linkBrowseButton.currentTitle == "Hide Browser"))
+        if !currentURLStringIsValid { triggerWebViewForURLCheck(linkTextField.text) }
     }
 
 
-    private func checkValidURLString(rawURLString: String) {
+    private func manageUIForActiveWebView(isActive: Bool) {
+        if isActive {
+            self.webView.alpha = 0.2
+            associatedLinkView.alpha = 0.2
+            linkTextField.resignFirstResponder()
+            linkTextField.enabled = false
+        } else {
+            self.webView.alpha = 1.0
+            linkTextField.enabled = true
+            linkTextField.becomeFirstResponder()
+            associatedLinkView.alpha = 1.0
+        }
+
+    }
+
+    private func manageUIForURLString(isValid: Bool) {
+        currentURLStringIsValid = isValid
+        saveButton.enabled = isValid
+        saveButton.alpha = isValid ? 1.0 : 0.2
+    }
+
+
+    // MARK: -
+    // MARK: Web View Management and Link-Checking
+
+    private func triggerWebViewForURLCheck(rawURLString: String) {
 
         if let components = NSURLComponents(string: rawURLString) {
             // in case they didn't enter the 'http://'
             if components.scheme == nil { components.scheme = "http" }
             if let url = components.URL {
-                let requestObj = NSURLRequest(URL: url)
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+                let requestObj = NSMutableURLRequest(URL: url)
+                requestObj.timeoutInterval = 30
                 self.webView.loadRequest(requestObj)
-                return
+                manageUIForActiveWebView(true)
             }
         }
-        currentURLStringIsValid = false
     }
 
 
     // http://stackoverflow.com/questions/2491410/get-current-url-of-uiwebview/3654403#3654403
     func webViewDidFinishLoad(webView: UIWebView) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        // don't restore the UI if the error alert dialog is showing
+        if (!failedWebViewLoadWithError) { manageUIForActiveWebView(false) }
         if let currentURL = self.webView.request?.URL?.absoluteString {
             if currentURL != "about:blank" {
                 linkTextField.text = currentURL
-                currentURLStringIsValid = true
+                manageUIForURLString(true)
             } else {
-                linkTextField.text = "http://"
-                currentURLStringIsValid = false
+                manageUIForURLString(false)
             }
         } else {
-            currentURLStringIsValid = false
+            manageUIForURLString(false)
         }
     }
 
     func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
 
-        if error.code == NSURLErrorNotConnectedToInternet || error.code == NSURLErrorNetworkConnectionLost {
-            let errorStr = "Not connected to the internet\n\n\(error.localizedDescription)"
-            UICommon.errorAlert("URL Validation Failure", message: errorStr, inViewController: self)
-        } else if error.code == NSURLErrorCannotFindHost {
-            let errorStr = "\(error.localizedDescription)"
-            UICommon.errorAlert("URL Validation Failure", message: errorStr, inViewController: self)
-        }
-        if let currentURL = self.webView.request?.URL?.absoluteString {
-            println("didFailLoadWithError=[\(error.code)]\n\(error.localizedDescription)\n\(currentURL)")
-        } else {
-            println("didFailLoadWithError=[\(error.code)]\n\(error.localizedDescription)")
-        }
+        // I think these errors are unnecessarily triggered if the host forwards the request
+        if error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled { return }
+        if error.domain == NSURLErrorDomain && error.code == NSURLErrorCannotConnectToHost { return }
+
+        // Flag to prevent restoration of the UI before the user dismisses the alert
+        failedWebViewLoadWithError = true
+
+
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         /*
         If you load a valid URL, then type in another invalid URL, the web view
         does not redraw to erase the previous valid page.  So, force it to "about:blank"
         */
-        currentURLStringIsValid = false
         clearWebView()
+
+        var errorStr = ""
+        if error.code == NSURLErrorNotConnectedToInternet || error.code == NSURLErrorNetworkConnectionLost {
+            errorStr = "Not connected to the internet\n\n\(error.localizedDescription)"
+        } else {
+            errorStr = "\(error.localizedDescription)\n\n[\(error.code)]"
+        }
+
+        // don't restore the UI until the user dismisses the alert
+        UICommon.errorAlertWithHandler("URL Validation Failure", message: errorStr, inViewController: self, handler: alertHandler)
     }
 
-
+    private func alertHandler(action: UIAlertAction!) -> Void {
+        self.manageUIForActiveWebView(false)
+        self.manageUIForURLString(false)
+        self.failedWebViewLoadWithError = false      // flag that the error has been handled
+    }
 
     private func clearWebView() {
         if let url = NSURL(string: "about:blank") {
@@ -184,6 +244,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         UICommon.errorAlert("Geocode Failure", message: errorStr, inViewController: self)
     }
 
+
     @IBAction func findOnTheMap() {
 
         if let location = whereStudyingTextField.text {
@@ -204,13 +265,6 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
                         return
                     }
                     let pm = pmArray![0]
-//                    println("name=\(pm.name)")
-//                    println("addr=\(pm.addressDictionary)")
-//                    println("post=\(pm.postalCode)")
-//                    println("reg=\(pm.region)")
-//                    println("lat=\(pm.location.coordinate.latitude)")
-//                    println("long=\(pm.location.coordinate.longitude)")
-
                     let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
                     user.mapString = location
                     user.latitude = pm.location.coordinate.latitude
@@ -226,99 +280,11 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
                     let span = MKCoordinateSpanMake(0.1, 0.1)
                     let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
                     self.mapView.setRegion(region, animated: true)
-                    self.swapViewsFindIsActive(false)
+                    self.swapLinkAndFindView(false)
             })
 
         }
     }
-
-
-    // MARK: -
-    // MARK: URL validator and its tester
-
-    /*
-    http://stackoverflow.com/questions/1471201/how-to-validate-an-url-on-the-iphone
-    http://stackoverflow.com/questions/24345928/swift-using-nsdatadetectors
-    */
-//    private func getValidURL(rawURLString: String) -> String? {
-//        var length = count(rawURLString)
-//        if length <= 0 { return nil }
-//
-//        var urlString = rawURLString.lowercaseString
-//        if !urlString.hasPrefix("http") { urlString = "http://" + rawURLString }
-//        length = count(urlString)
-//
-//        var error: NSError? = nil
-//        let dataDetector = NSDataDetector(types: NSTextCheckingType.Link.rawValue, error: &error)
-//        if error != nil || dataDetector == nil {
-//            return nil
-//        }
-//        let range = NSMakeRange(0, length)
-//        let notFoundRange = NSMakeRange(NSNotFound, 0)
-//        let linkRange = dataDetector!.rangeOfFirstMatchInString(urlString, options: .Anchored, range: range)
-//        if !NSEqualRanges(notFoundRange, linkRange) && NSEqualRanges(linkRange, range) { return urlString }
-//        return nil
-//    }
-
-
-/* Test Results
-    www.o2l.com=Optional("http://www.o2l.com")
-    wwwo2lcom=Optional("http://wwwo2lcom")
-    http://www.o2l.com=Optional("http://www.o2l.com")
-    =nil
-    www.o2l.com/aaaaa=Optional("http://www.o2l.com/aaaaa")
-    o2l.com=Optional("http://o2l.com")
-    .com=Optional("http://.com")
-    .=nil
-    http=nil
-    http:=nil
-    http:/=nil
-    http://=nil
-    http://www=Optional("http://www")
-    http.s://www.gmail.com=Optional("http.s://www.gmail.com")
-    https:.//gmailcom=nil
-    https://gmail.me.=nil
-    https://www.gmail.me.com.com.com.com=Optional("https://www.gmail.me.com.com.com.com")
-    http:/./ww-w.wowone.com=nil
-    http://.www.wowone=Optional("http://.www.wowone")
-    http://www.wow-one.com=Optional("http://www.wow-one.com")
-    http://k=Optional("http://k")
-    http:\gmail.com=nil
-    youtube.com/watch?v=LwE99t-kg7E=Optional("http://youtube.com/watch?v=LwE99t-kg7E")
-    'https://'google.com=Optional("http://\'https://\'google.com")
-    fake://0=Optional("http://fake://0")
-
-*/
-
-//    private func testValidURLs() {
-//        var s = ""
-//        s = "www.o2l.com"; println("\(s)=\(getValidURL(s))")
-//        s = "wwwo2lcom"; println("\(s)=\(getValidURL(s))")
-//        s = "http://www.o2l.com"; println("\(s)=\(getValidURL(s))")
-//        s = ""; println("\(s)=\(getValidURL(s))")
-//        s = "www.o2l.com/aaaaa"; println("\(s)=\(getValidURL(s))")
-//        s = "o2l.com"; println("\(s)=\(getValidURL(s))")
-//        s = ".com"; println("\(s)=\(getValidURL(s))")
-//        s = "."; println("\(s)=\(getValidURL(s))")
-//        s = "http"; println("\(s)=\(getValidURL(s))")
-//        s = "http:"; println("\(s)=\(getValidURL(s))")
-//        s = "http:/"; println("\(s)=\(getValidURL(s))")
-//        s = "http://"; println("\(s)=\(getValidURL(s))")
-//        s = "http://www"; println("\(s)=\(getValidURL(s))")
-//        //--
-//        s = "http.s://www.gmail.com"; println("\(s)=\(getValidURL(s))")
-//        s = "https:.//gmailcom"; println("\(s)=\(getValidURL(s))")
-//        s = "https://gmail.me."; println("\(s)=\(getValidURL(s))")
-//        s = "https://www.gmail.me.com.com.com.com"; println("\(s)=\(getValidURL(s))")
-//        s = "http:/./ww-w.wowone.com"; println("\(s)=\(getValidURL(s))")
-//        s = "http://.www.wowone"; println("\(s)=\(getValidURL(s))")
-//        s = "http://www.wow-one.com"; println("\(s)=\(getValidURL(s))")
-//        s = "http://k"; println("\(s)=\(getValidURL(s))")
-//        s = "http:\\gmail.com"; println("\(s)=\(getValidURL(s))")
-//        s = "youtube.com/watch?v=LwE99t-kg7E"; println("\(s)=\(getValidURL(s))")
-//        s = "'https://'google.com"; println("\(s)=\(getValidURL(s))")
-//        s = "fake://0"; println("\(s)=\(getValidURL(s))")
-//    }
 
 
 
@@ -328,7 +294,6 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
 
     @IBAction func saveData() {
-        //      if let urlString = getValidURL(linkTextField.text) {
         if currentURLStringIsValid {
         } else {
             UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a valid link", inViewController: self)

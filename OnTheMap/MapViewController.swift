@@ -78,9 +78,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: handle header buttons
 
     func doPin() {
-        let controller = self.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
-        self.presentViewController(controller, animated: true, completion: nil)
-
+        InformationPostViewController.presentWithParent(self)
+//        let controller = self.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
+//        self.presentViewController(controller, animated: true, completion: nil)
     }
 
 
