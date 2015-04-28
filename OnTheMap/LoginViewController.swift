@@ -77,9 +77,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
 
         if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
-            self.currentUser.userKey = accountDict["key"] as? String
-            self.currentUser.sessionID = sessionDict["id"] as? String
-            NetClient.sharedInstance.loadPublicUserData(self.currentUser.userKey!, completionHandler: publicUserDataClosure)
+            if let userKey = accountDict["key"] as? String {
+                self.currentUser.userKey = userKey
+                if let sess = sessionDict["id"] as? String { self.currentUser.sessionID = sess }
+                NetClient.sharedInstance.loadPublicUserData(userKey, completionHandler: publicUserDataClosure)
+            } else {
+                dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
+                UICommon.errorAlert("Udacity Login Failure", message: "The Udacity API failed to return a User Key", inViewController: self)
+            }
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
             dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
@@ -106,12 +111,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             return
         }
 
-        if let userDict = topDict!["user"] as? NSDictionary {
-            self.currentUser.lastName = userDict["last_name"] as? String
-            self.currentUser.firstName = userDict["first_name"] as? String
-            if let emailDict = userDict["email"] as? NSDictionary {
-                self.currentUser.email = emailDict["address"] as? String
-            }
+        if let userDict = topDict!["user"] as? [String: AnyObject] {
+
+            self.currentUser.loadPublicData(userDict)
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
 
             /* 

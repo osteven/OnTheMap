@@ -11,13 +11,6 @@ import UIKit
 class MapListViewController: UITabBarController {
 
 
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-     }
-
-
     func doRefresh() {
         StudentManager.sharedInstance.removeAll()
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), {
@@ -57,14 +50,16 @@ class MapListViewController: UITabBarController {
                     StudentManager.sharedInstance.load(userDict, requestedBatchSize: NetClient.PARSE_API_BATCH_SIZE)
 
                     if StudentManager.sharedInstance.canRetrieveMoreStudentLocations() {
-                        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure) })
+                        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), {
+                            NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure) })
                     }
 
                     return
                 }
             }
         }
-        UICommon.errorAlert("Parse Failure", message: "The Parse Server did not return a valid user dictionary", inViewController: self)
+        UICommon.errorAlert("Parse Failure", message: "The Parse Server did not return a valid user dictionary",
+            inViewController: self)
     }
 
 

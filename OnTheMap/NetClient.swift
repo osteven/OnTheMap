@@ -24,7 +24,7 @@ class NetClient {
     private let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
     private let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 
-    static let PARSE_API_BATCH_SIZE = 100        // for debugging
+    static let PARSE_API_BATCH_SIZE = 100        // this is parameterized so it can be changed for debugging
 
     private let session = NSURLSession.sharedSession()
 
@@ -32,7 +32,7 @@ class NetClient {
     private init() {}
 
     // MARK: -
-    // MARK: helper class function
+    // MARK: helper class function from The Movie Manager
     class func escapedParameters(parameters: [String : AnyObject]) -> String {
         var urlVars = [String]()
         for (key, value) in parameters {
@@ -49,7 +49,7 @@ class NetClient {
 
         return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
     }
-    
+
 
     // MARK: -
     // MARK: Udacity API calls
@@ -71,11 +71,9 @@ class NetClient {
         task.resume()
     }
 
-    // MARK: -
-    // TODO: limit to 100 and page
 
     // MARK: -
-    // MARK: Parse API Call
+    // MARK: Parse API Calls
     func loadStudentLocations(completionHandler: TaskRequestClosure) {
 
         var parameters = [String: AnyObject]()
@@ -96,6 +94,22 @@ class NetClient {
     }
 
 
+
+    func postStudentLocation(student: CurrentUser, completionHandler: TaskRequestClosure) {
+
+        let request = NSMutableURLRequest(URL: NSURL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
+        request.HTTPMethod = "POST"
+        request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+
+        let httpBody = student.encodedForHTTPBody
+        request.HTTPBody = httpBody.dataUsingEncoding(NSUTF8StringEncoding)
+
+        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+        task.resume()
+    }
 
 
 

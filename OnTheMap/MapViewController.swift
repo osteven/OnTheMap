@@ -10,6 +10,10 @@
 import UIKit
 import MapKit
 
+
+let NOTIFICATION_MAP_SCROLL = "com.o2l.mapscroll"
+
+
 class MapViewController: UIViewController, MKMapViewDelegate {
 
 
@@ -29,6 +33,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self,
             selector: "studentsLoadedNotification:",
             name: NOTIFICATION_STUDENTS_LOADED, object: nil)
+
+
+        /*
+        After the user posts a new location, scroll the map to show it.
+        */
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "mapScrollNotification:",
+            name: NOTIFICATION_MAP_SCROLL, object: nil)
     }
 
     deinit {
@@ -48,6 +60,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let center = self.mapView.centerCoordinate
             self.mapView.centerCoordinate = center
         })
+    }
+
+    func mapScrollNotification(notification: NSNotification) {
+        if let annotation = notification.object as? MKPointAnnotation {
+            dispatch_async(dispatch_get_main_queue(), {
+                let span = MKCoordinateSpanMake(0.2, 0.2)
+                let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
+                self.mapView.setRegion(region, animated: true)
+            })
+        }
     }
 
     override func viewDidLoad() {
@@ -79,8 +101,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     func doPin() {
         InformationPostViewController.presentWithParent(self)
-//        let controller = self.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
-//        self.presentViewController(controller, animated: true, completion: nil)
     }
 
 

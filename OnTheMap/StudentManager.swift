@@ -65,4 +65,13 @@ class StudentManager: Printable {
         studentInfoArray.removeAll()
     }
 
+
+    func appendSavedUser(user: CurrentUser) -> StudentInformation {
+        let si = StudentInformation(user: user)
+        self.studentInfoArray.insert(si, atIndex: 0)
+        self.newAnnotationsArray.append(si.annotation)
+        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
+        return si
+    }
+
 }

@@ -31,6 +31,10 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     // MARK: -
     // MARK: Loading
 
+
+    /*
+    Convenience loader so that this code needs not be duplicated in the tab VCs that both load this VC
+    */
     static func presentWithParent(parent: UIViewController) {
         let controller = parent.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
         parent.presentViewController(controller, animated: true, completion: nil)
@@ -101,7 +105,6 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         } else {
             self.findOnMapView.hidden = true
             self.associatedLinkView.hidden = false
-            if linkTextField.text == "" { linkTextField.text = "http://" }
             linkTextField.becomeFirstResponder()
             manageUIForURLString(false)
         }
@@ -152,8 +155,10 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     // MARK: -
     // MARK: Web View Management and Link-Checking
 
+    /*
+    Attempt to load the user-entered URL string into the web view.
+    */
     private func triggerWebViewForURLCheck(rawURLString: String) {
-
         if let components = NSURLComponents(string: rawURLString) {
             // in case they didn't enter the 'http://'
             if components.scheme == nil { components.scheme = "http" }
@@ -185,6 +190,11 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         }
     }
 
+    /* 
+        I get inconsistent results from the UIWebView.  Sometimes I see too many unnecessary errors
+        (usually Cancelled and CannotConnectToHost) even thought the web page eventually loads.  And
+        sometimes it hangs without reporting an error or a timeout.
+    */
     func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
 
         // I think these errors are unnecessarily triggered if the host forwards the request
@@ -272,9 +282,9 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
                     self.mapView.hidden = false
 
                     let annotation = MKPointAnnotation()
-                    annotation.coordinate = CLLocationCoordinate2D(latitude: user.latitude!, longitude: user.longitude!)
-                    let fname = user.firstName ?? "?"
-                    let lname = user.lastName ?? "?"
+                    annotation.coordinate = CLLocationCoordinate2D(latitude: user.latitude, longitude: user.longitude)
+                    let fname = user.firstName == "" ? "?" : user.firstName
+                    let lname = user.lastName == "" ?  "?" : user.lastName
                     annotation.title = "\(fname) \(lname)"
                     self.mapView.addAnnotation(annotation)
                     let span = MKCoordinateSpanMake(0.1, 0.1)
@@ -295,11 +305,50 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     @IBAction func saveData() {
         if currentURLStringIsValid {
+            let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+            user.mediaURL = linkTextField.text
+            NetClient.sharedInstance.postStudentLocation(user, completionHandler: studentLocationClosure)
         } else {
             UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a valid link", inViewController: self)
             return
         }
     }
 
+
+    func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
+
+        if error != nil {
+            UICommon.errorAlert("Post API Failure", message: "Failed to post to Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self)
+            return
+        }
+        var parseError: NSError? = nil
+        if let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? [String: AnyObject] {
+            if let err = parseError {
+                UICommon.errorAlert("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(err.localizedDescription)]", inViewController: self)
+                return
+            }
+
+            let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+            user.updateAfterSave(topDict)
+            let newStudent = StudentManager.sharedInstance.appendSavedUser(user)
+            NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_MAP_SCROLL, object: newStudent.annotation)
+            self.dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            UICommon.errorAlert("Post API Failure", message: "Failed to received acknowledgment from Parse API", inViewController: self)
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 

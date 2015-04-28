@@ -15,13 +15,13 @@ struct StudentInformation: Printable {
     let uniqueKey: String
     let firstName: String
     let lastName: String
+    let mapString: String
     let mediaURL: String
     let longitude: CLLocationDegrees
     let latitude: CLLocationDegrees
     let annotation: MKPointAnnotation
 
     var description: String {
-        // return "#\(uniqueKey): \(firstName) \(lastName)"
         return "\(firstName) \(lastName)"
     }
 
@@ -38,6 +38,11 @@ struct StudentInformation: Printable {
         }
         if let s = dictionary["lastName"] as? String {
             self.lastName = s
+        } else {
+            return nil
+        }
+        if let s = dictionary["mapString"] as? String {
+            self.mapString = s
         } else {
             return nil
         }
@@ -60,6 +65,21 @@ struct StudentInformation: Printable {
         annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         annotation.title = "\(firstName) \(lastName)"
         annotation.subtitle = mediaURL
+    }
+
+
+    init(user: CurrentUser) {
+        self.uniqueKey = user.userKey
+        self.firstName = user.firstName
+        self.lastName = user.lastName
+        self.mapString = user.mapString
+        self.mediaURL = user.mediaURL
+        self.longitude = user.longitude
+        self.latitude = user.latitude
+        self.annotation = MKPointAnnotation()
+        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        annotation.title = "\(self.firstName) \(self.lastName)"
+        annotation.subtitle = self.mediaURL
     }
 
     /* Helper: Given an array of dictionaries, convert them to an array of StudentInformation objects */
