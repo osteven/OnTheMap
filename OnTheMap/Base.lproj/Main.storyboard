@@ -358,7 +358,6 @@
                                             </mask>
                                         </variation>
                                         <connections>
-                                            <action selector="findOnTheMap" destination="0uU-t9-3Qv" eventType="touchUpInside" id="SeI-PQ-TjY"/>
                                             <action selector="saveData" destination="0uU-t9-3Qv" eventType="touchUpInside" id="n9v-bz-VtK"/>
                                         </connections>
                                     </button>

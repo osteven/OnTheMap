@@ -69,7 +69,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         replacementString string: String) -> Bool {
             if textField == linkTextField {
                 // if the entered link is not validated, disable the submit button
-                manageUIForURLString(false)
+                manageUIReadyForSubmit(false)
                 return true
             }
 
@@ -106,7 +106,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             self.findOnMapView.hidden = true
             self.associatedLinkView.hidden = false
             linkTextField.becomeFirstResponder()
-            manageUIForURLString(false)
+            manageUIReadyForSubmit(false)
         }
     }
 
@@ -145,7 +145,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     }
 
-    private func manageUIForURLString(isValid: Bool) {
+    private func manageUIReadyForSubmit(isValid: Bool) {
         currentURLStringIsValid = isValid
         saveButton.enabled = isValid
         saveButton.alpha = isValid ? 1.0 : 0.2
@@ -181,12 +181,12 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         if let currentURL = self.webView.request?.URL?.absoluteString {
             if currentURL != "about:blank" {
                 linkTextField.text = currentURL
-                manageUIForURLString(true)
+                manageUIReadyForSubmit(true)
             } else {
-                manageUIForURLString(false)
+                manageUIReadyForSubmit(false)
             }
         } else {
-            manageUIForURLString(false)
+            manageUIReadyForSubmit(false)
         }
     }
 
@@ -220,12 +220,12 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         }
 
         // don't restore the UI until the user dismisses the alert
-        UICommon.errorAlertWithHandler("URL Validation Failure", message: errorStr, inViewController: self, handler: alertHandler)
+        UICommon.errorAlertWithHandler("URL Validation Failure", message: errorStr, inViewController: self, handler: webAlertHandler)
     }
 
-    private func alertHandler(action: UIAlertAction!) -> Void {
+    private func webAlertHandler(action: UIAlertAction!) -> Void {
         self.manageUIForActiveWebView(false)
-        self.manageUIForURLString(false)
+        self.manageUIReadyForSubmit(false)
         self.failedWebViewLoadWithError = false      // flag that the error has been handled
     }
 
@@ -307,6 +307,9 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         if currentURLStringIsValid {
             let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
             user.mediaURL = linkTextField.text
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+            self.manageUIForActiveWebView(true)
+            self.manageUIReadyForSubmit(true)
             NetClient.sharedInstance.postStudentLocation(user, completionHandler: studentLocationClosure)
         } else {
             UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a valid link", inViewController: self)
@@ -317,14 +320,15 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
 
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         if error != nil {
-            UICommon.errorAlert("Post API Failure", message: "Failed to post to Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self)
+            UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to post to Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self, handler: postAlertHandler)
             return
         }
         var parseError: NSError? = nil
         if let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? [String: AnyObject] {
             if let err = parseError {
-                UICommon.errorAlert("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(err.localizedDescription)]", inViewController: self)
+                UICommon.errorAlertWithHandler("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(err.localizedDescription)]", inViewController: self, handler: postAlertHandler)
                 return
             }
 
@@ -332,11 +336,24 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             user.updateAfterSave(topDict)
             let newStudent = StudentManager.sharedInstance.appendSavedUser(user)
             NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_MAP_SCROLL, object: newStudent.annotation)
+            dispatch_async(dispatch_get_main_queue(), {
+                self.manageUIForActiveWebView(false)
+                self.manageUIReadyForSubmit(true)
+            })
             self.dismissViewControllerAnimated(true, completion: nil)
         } else {
-            UICommon.errorAlert("Post API Failure", message: "Failed to received acknowledgment from Parse API", inViewController: self)
+            UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to received acknowledgment from Parse API", inViewController: self, handler: postAlertHandler)
         }
     }
+
+
+    private func postAlertHandler(action: UIAlertAction!) -> Void {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.manageUIForActiveWebView(false)
+            self.manageUIReadyForSubmit(true)
+         })
+    }
+
 
 }
 
