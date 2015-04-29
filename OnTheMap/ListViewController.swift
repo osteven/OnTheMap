@@ -52,7 +52,8 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
         This is needed for a reload after a refresh.
     */
     func studentsLoadedNotification(notification: NSNotification) {
-        if let table = self.tableView {
+        // don't reference self.tableView if it hasn't been created yet
+       if let table = self.tableView {
             dispatch_async(dispatch_get_main_queue(), {
                 table.reloadData()
                 table.setContentOffset(CGPointZero, animated: true)
@@ -93,6 +94,9 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let cell = tableView.dequeueReusableCellWithIdentifier("StudentListCell") as? UITableViewCell
         if let student = StudentManager.sharedInstance.studentAtIndex(indexPath.row) {
             cell!.textLabel?.text = student.description
+            if let detailTextLabel = cell!.detailTextLabel {
+                detailTextLabel.text = student.mapString
+            }
         } else {
             // this should never happen because the numberOfStudents() will return zero
             cell!.textLabel?.text = "Error: Students not loaded"

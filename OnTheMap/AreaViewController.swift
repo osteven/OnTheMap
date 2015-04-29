@@ -13,17 +13,56 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     var uniqueStudentIDArray: [String]! = nil
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var tableView: UITableView!
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
+
+
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+
+        /*
+        If the student information becomes refreshed, this view's table doesn't know about it.  So
+        we should listen for the notification.
+        */
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "studentsLoadedNotification:",
+            name: NOTIFICATION_STUDENTS_LOADED, object: nil)
     }
+
+    deinit {
+        // http://natashatherobot.com/ios8-where-to-remove-observer-for-nsnotification-in-swift/su
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         let uniqueSet = StudentManager.sharedInstance.getUniqueIDs()
         uniqueStudentIDArray = Array(uniqueSet)
     }
+
+    /*
+    The first time through, the table won't be loaded yet.  But it doesn't matter
+    because it will be loaded by the time the user switches to that tab.
+    This is needed for a reload after a refresh.
+    */
+    func studentsLoadedNotification(notification: NSNotification) {
+
+        // don't reference self.tableView if it hasn't been created yet
+        if let table = self.tableView {
+            dispatch_async(dispatch_get_main_queue(), {
+                table.reloadData()
+                if let indexPath = table.indexPathForSelectedRow() {
+                    table.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: .Top)
+                }
+            })
+        }
+    }
+
+
+
+
 
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

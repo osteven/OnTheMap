@@ -94,7 +94,8 @@ struct StudentInformation: Printable {
             if let si = StudentInformation(dictionary: result) {
                 students.append(si)
             } else {
-                println("Failed to create StudentInformation: \(result)")
+                // uncomment if you want to see bad data that has been posted to the server.
+                // println("Failed to create StudentInformation: \(result)")
             }
         }
         return students

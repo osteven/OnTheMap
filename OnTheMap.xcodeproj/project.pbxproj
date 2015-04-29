@@ -85,8 +85,8 @@
 		B035E2A81ADF25B400D13596 = {
 			isa = PBXGroup;
 			children = (
-				B0CE28231AE171C3004ED171 /* MapKit.framework */,
 				B035E2B31ADF25B400D13596 /* OnTheMap */,
+				B03984601AF13F6F005959CA /* Frameworks */,
 				B035E2C91ADF25B500D13596 /* OnTheMapTests */,
 				B035E2B21ADF25B400D13596 /* Products */,
 			);
@@ -150,6 +150,15 @@
 				B035E2CB1ADF25B500D13596 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B03984601AF13F6F005959CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B0CE28231AE171C3004ED171 /* MapKit.framework */,
+			);
+			name = Frameworks;
+			path = OnTheMap;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -390,6 +399,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/steven/Documents/FacebookSDK,
+				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -400,6 +413,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/steven/Documents/FacebookSDK,
+				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";

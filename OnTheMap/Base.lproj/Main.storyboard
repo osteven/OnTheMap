@@ -180,10 +180,24 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StudentListCell" id="wWt-pf-WLU">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StudentListCell" textLabel="SZU-cR-tc0" detailTextLabel="AKw-cb-0Rg" style="IBUITableViewCellStyleSubtitle" id="wWt-pf-WLU">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wWt-pf-WLU" id="3pD-gP-CVF">
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="SZU-cR-tc0">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="AKw-cb-0Rg">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
@@ -201,9 +215,7 @@
                             <constraint firstItem="AFn-sv-7tR" firstAttribute="top" secondItem="YWY-2C-CM6" secondAttribute="bottom" id="vdf-OM-CA6"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="On The Map" id="3LC-N4-ceV">
-                        <barButtonItem key="leftBarButtonItem" title="Logout" id="LAc-g8-dQs"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="On The Map" id="3LC-N4-ceV"/>
                     <connections>
                         <outlet property="tableView" destination="YWY-2C-CM6" id="94z-jj-OkI"/>
                     </connections>
@@ -224,7 +236,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Bcb-i2-ahL">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Bcb-i2-ahL">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <connections>
                                     <outlet property="delegate" destination="BQB-Gd-dmx" id="4o4-Xa-fQf"/>
@@ -232,10 +244,14 @@
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Bcb-i2-ahL" firstAttribute="top" secondItem="65L-7s-A3w" secondAttribute="bottom" id="6Z4-Ia-4V9"/>
+                            <constraint firstItem="Bcb-i2-ahL" firstAttribute="leading" secondItem="v8R-rZ-Pc0" secondAttribute="leadingMargin" constant="-16" id="9Xa-t6-ItZ"/>
+                            <constraint firstItem="0NZ-IQ-9ka" firstAttribute="top" secondItem="Bcb-i2-ahL" secondAttribute="bottom" id="Fvn-tq-QHM"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Bcb-i2-ahL" secondAttribute="trailing" constant="-16" id="XcS-9m-2Cq"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="On The Map" id="094-DZ-spE">
-                        <barButtonItem key="leftBarButtonItem" title="Logout" id="9eo-XA-96f"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="On The Map" id="094-DZ-spE"/>
                     <connections>
                         <outlet property="mapView" destination="Bcb-i2-ahL" id="g9J-9Q-p5K"/>
                     </connections>
@@ -596,6 +612,7 @@
                     <tabBarItem key="tabBarItem" title="Area" image="Target" id="dYv-qV-lPb"/>
                     <connections>
                         <outlet property="mapView" destination="PPB-n2-PfD" id="gmI-Dq-Yma"/>
+                        <outlet property="tableView" destination="5xl-b4-AgL" id="2f0-4D-N5b"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a6A-Cq-tXW" userLabel="First Responder" sceneMemberID="firstResponder"/>

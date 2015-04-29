@@ -105,7 +105,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         } else {
             self.findOnMapView.hidden = true
             self.associatedLinkView.hidden = false
-            linkTextField.becomeFirstResponder()
+            self.view.endEditing(true)
             manageUIReadyForSubmit(false)
         }
     }
@@ -139,7 +139,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         } else {
             self.webView.alpha = 1.0
             linkTextField.enabled = true
-            linkTextField.becomeFirstResponder()
+            self.view.endEditing(true)
             associatedLinkView.alpha = 1.0
         }
 

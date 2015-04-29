@@ -91,7 +91,7 @@ class StudentManager: Printable {
     
 
     func getUniqueIDs() -> Set<String> {
-        let array = studentInfoArray.map { return $0.uniqueKey }
+        var array = studentInfoArray.map { return $0.uniqueKey }
         return Set(array)
     }
 
