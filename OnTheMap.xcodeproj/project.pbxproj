@@ -15,6 +15,7 @@
 		B035E2CD1ADF25B500D13596 /* OnTheMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2CC1ADF25B500D13596 /* OnTheMapTests.swift */; };
 		B035E2D71AE02E1D00D13596 /* StudentInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D61AE02E1D00D13596 /* StudentInformation.swift */; };
 		B035E2D91AE040A900D13596 /* StudentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D81AE040A900D13596 /* StudentManager.swift */; };
+		B03984591AF01AEA005959CA /* AreaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03984581AF01AEA005959CA /* AreaViewController.swift */; };
 		B0CE28201AE07524004ED171 /* NetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE281F1AE07524004ED171 /* NetClient.swift */; };
 		B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CE28211AE09E9B004ED171 /* CurrentUser.swift */; };
 		B0CE28241AE171C3004ED171 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0CE28231AE171C3004ED171 /* MapKit.framework */; };
@@ -51,6 +52,7 @@
 		B035E2DA1AE0500400D13596 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		B035E2DB1AE0500400D13596 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		B035E2DC1AE0500400D13596 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
+		B03984581AF01AEA005959CA /* AreaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaViewController.swift; sourceTree = "<group>"; };
 		B0CE281F1AE07524004ED171 /* NetClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetClient.swift; sourceTree = "<group>"; };
 		B0CE28211AE09E9B004ED171 /* CurrentUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		B0CE28231AE171C3004ED171 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -117,6 +119,7 @@
 				B0CE28291AE4085D004ED171 /* ListViewController.swift */,
 				B0EBA6081AE8241E0080FE76 /* MapListViewController.swift */,
 				B0EBA60A1AEAC2360080FE76 /* InformationPostViewController.swift */,
+				B03984581AF01AEA005959CA /* AreaViewController.swift */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 				B035E2B91ADF25B400D13596 /* LoginViewController.swift in Sources */,
 				B0EBA6091AE8241E0080FE76 /* MapListViewController.swift in Sources */,
 				B0CE282B1AE4085D004ED171 /* ListViewController.swift in Sources */,
+				B03984591AF01AEA005959CA /* AreaViewController.swift in Sources */,
 				B0CE28221AE09E9B004ED171 /* CurrentUser.swift in Sources */,
 				B0EBA60B1AEAC2360080FE76 /* InformationPostViewController.swift in Sources */,
 				B035E2B71ADF25B400D13596 /* AppDelegate.swift in Sources */,

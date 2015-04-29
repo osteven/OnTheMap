@@ -87,9 +87,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             I can force it to draw by redundantly setting the image in code.
         */
         if let array = self.tabBarController?.tabBar.items {
-            if let firstTabBarItem = array[0] as? UITabBarItem, secondTabBarItem = array[1] as? UITabBarItem {
+            if let firstTabBarItem = array[0] as? UITabBarItem, secondTabBarItem = array[1] as? UITabBarItem, thirdTabBarItem = array[2] as? UITabBarItem {
                 firstTabBarItem.image = UIImage(named: "Map.pdf")
                 secondTabBarItem.image = UIImage(named: "List.pdf")
+                thirdTabBarItem.image = UIImage(named: "Target.png")
             }
         }
     }

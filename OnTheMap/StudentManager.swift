@@ -13,6 +13,9 @@ let NOTIFICATION_STUDENTS_LOADED = "com.o2l.studentmanagerloaded"
 
 class StudentManager: Printable {
 
+    // MARK: -
+    // MARK: Properties
+
     static let sharedInstance = StudentManager()
 
     private var studentInfoArray = [StudentInformation]()
@@ -27,6 +30,10 @@ class StudentManager: Printable {
         return s
     }
 
+
+    // MARK: -
+    // MARK: Loading
+
     private init() {}
 
     func load(dictionary: [[String: AnyObject]], requestedBatchSize: Int) {
@@ -37,19 +44,9 @@ class StudentManager: Printable {
         NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
     }
 
-    func isLoaded() -> Bool { return self.studentInfoArray.count > 0 }
     func canRetrieveMoreStudentLocations() -> Bool {
         if countOfAllStudentLocations == nil { return true }
         return countOfReturnedStudentLocations <= countOfAllStudentLocations
-    }
-
-    func numberOfStudents() -> Int {
-        return studentInfoArray.count
-    }
-
-    func studentAtIndex(row: Int) -> StudentInformation? {
-        if studentInfoArray.count == 0 { return nil }
-        return studentInfoArray[row]
     }
 
     func getAnnotations() -> [MKPointAnnotation]? {
@@ -57,6 +54,18 @@ class StudentManager: Printable {
         newAnnotationsArray.removeAll()
         return returnTheseAnnotations
     }
+
+    func appendSavedUser(user: CurrentUser) -> StudentInformation {
+        let si = StudentInformation(user: user)
+        self.studentInfoArray.insert(si, atIndex: 0)
+        self.newAnnotationsArray.append(si.annotation)
+        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
+        return si
+    }
+
+
+    // MARK: -
+    // MARK: Removing
 
     func removeAll() {
         countOfAllStudentLocations = nil
@@ -66,12 +75,44 @@ class StudentManager: Printable {
     }
 
 
-    func appendSavedUser(user: CurrentUser) -> StudentInformation {
-        let si = StudentInformation(user: user)
-        self.studentInfoArray.insert(si, atIndex: 0)
-        self.newAnnotationsArray.append(si.annotation)
-        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
-        return si
+    // MARK: -
+    // MARK: Querying
+
+    func isLoaded() -> Bool { return self.studentInfoArray.count > 0 }
+
+    func numberOfStudents() -> Int {
+        return studentInfoArray.count
     }
+
+    func studentAtIndex(row: Int) -> StudentInformation? {
+        if studentInfoArray.count == 0 { return nil }
+        return studentInfoArray[row]
+    }
+    
+
+    func getUniqueIDs() -> Set<String> {
+        let array = studentInfoArray.map { return $0.uniqueKey }
+        return Set(array)
+    }
+
+    func getLocationsForUniqueID(uniqueID: String) -> [StudentInformation] {
+        return studentInfoArray.filter { $0.uniqueKey == uniqueID }
+    }
+
+    func getStudentNameForUniqueID(uniqueID: String) -> String {
+        let array = self.getLocationsForUniqueID(uniqueID)
+        return array.count > 0 ? "\(array[0].firstName) \(array[0].lastName)" : ""
+    }
+    func countLocationsForUniqueID(uniqueID: String) -> Int {
+        let array = self.getLocationsForUniqueID(uniqueID)
+        return array.count
+    }
+
+    func getAnnotationsForUniqueID(uniqueID: String) -> [MKPointAnnotation] {
+        let siArray = studentInfoArray.filter { $0.uniqueKey == uniqueID }
+        return siArray.map { return $0.annotation }
+    }
+
+
 
 }

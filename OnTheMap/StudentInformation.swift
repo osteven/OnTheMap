@@ -52,11 +52,15 @@ struct StudentInformation: Printable {
             return nil
         }
         if let s = dictionary["longitude"] as? Double {
+            // sanity check on bad data to prevent the map from crashing later
+            if s < -180.0 || s > 180.0 { return nil }
             self.longitude = CLLocationDegrees(s)
         } else {
             return nil
         }
         if let s = dictionary["latitude"] as? Double {
+            // sanity check on bad data to prevent the map from crashing later
+            if s < -90.0 || s > 90.0 { return nil }
             self.latitude = CLLocationDegrees(s)
         } else {
             return nil
@@ -100,6 +104,10 @@ struct StudentInformation: Printable {
 }
 
 /*
+
+
+
+
 
 [
 uniqueKey: 231757155,

@@ -490,6 +490,7 @@
                     <connections>
                         <segue destination="e4d-zY-Vzv" kind="relationship" relationship="viewControllers" id="IaX-xv-lAm"/>
                         <segue destination="NQb-X1-FLo" kind="relationship" relationship="viewControllers" id="fy2-Pz-zE1"/>
+                        <segue destination="zNb-4o-Wz8" kind="relationship" relationship="viewControllers" id="9uC-XY-Dm0"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QEz-FI-2za" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -534,11 +535,79 @@
             </objects>
             <point key="canvasLocation" x="557" y="425"/>
         </scene>
+        <!--Area-->
+        <scene sceneID="sNj-Ip-XFI">
+            <objects>
+                <viewController id="zNb-4o-Wz8" customClass="AreaViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1dt-jd-qgW"/>
+                        <viewControllerLayoutGuide type="bottom" id="dGD-F7-nzo"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="iTK-yi-qDU">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="5xl-b4-AgL">
+                                <rect key="frame" x="0.0" y="28" width="600" height="285"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="UniqueStudentCell" textLabel="j4i-dU-r4F" detailTextLabel="bHy-2d-sCH" style="IBUITableViewCellStyleSubtitle" id="Lus-uS-pop">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Lus-uS-pop" id="ICg-7v-Kaa">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="j4i-dU-r4F">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bHy-2d-sCH">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="zNb-4o-Wz8" id="Xkp-Cx-GsY"/>
+                                    <outlet property="delegate" destination="zNb-4o-Wz8" id="C4c-NB-znG"/>
+                                </connections>
+                            </tableView>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PPB-n2-PfD">
+                                <rect key="frame" x="0.0" y="321" width="600" height="230"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="PPB-n2-PfD" firstAttribute="leading" secondItem="iTK-yi-qDU" secondAttribute="leadingMargin" constant="-16" id="1kl-yg-yNq"/>
+                            <constraint firstItem="PPB-n2-PfD" firstAttribute="height" secondItem="5xl-b4-AgL" secondAttribute="height" id="6oY-XD-PtM"/>
+                            <constraint firstItem="dGD-F7-nzo" firstAttribute="top" secondItem="PPB-n2-PfD" secondAttribute="bottom" id="7we-dL-TmI"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PPB-n2-PfD" secondAttribute="trailing" constant="-16" id="H93-vg-Amk"/>
+                            <constraint firstItem="5xl-b4-AgL" firstAttribute="leading" secondItem="iTK-yi-qDU" secondAttribute="leadingMargin" constant="-16" id="JHi-OW-yQo"/>
+                            <constraint firstItem="PPB-n2-PfD" firstAttribute="top" secondItem="5xl-b4-AgL" secondAttribute="bottom" constant="8" id="Sxx-RJ-BaB"/>
+                            <constraint firstItem="5xl-b4-AgL" firstAttribute="top" secondItem="1dt-jd-qgW" secondAttribute="bottom" constant="8" id="UsM-m7-ahd"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="5xl-b4-AgL" secondAttribute="trailing" constant="-16" id="haG-Xg-QF4"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Area" image="Target" id="dYv-qV-lPb"/>
+                    <connections>
+                        <outlet property="mapView" destination="PPB-n2-PfD" id="gmI-Dq-Yma"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a6A-Cq-tXW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="317" y="1221"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Check" width="66" height="66"/>
         <image name="List" width="32" height="32"/>
         <image name="Map" width="32" height="32"/>
+        <image name="Target" width="32" height="32"/>
         <image name="UdacityGraphic" width="256" height="256"/>
     </resources>
 </document>
