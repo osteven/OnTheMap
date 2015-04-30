@@ -191,9 +191,9 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     }
 
     /* 
-        I get inconsistent results from the UIWebView.  Sometimes I see too many unnecessary errors
-        (usually Cancelled and CannotConnectToHost) even thought the web page eventually loads.  And
-        sometimes it hangs without reporting an error or a timeout.
+        I get inconsistent results from the UIWebView.  Sometimes I see too many unnecessary 
+        errors (usually Cancelled and CannotConnectToHost) even thought the web page 
+        eventually loads.  And sometimes it hangs without reporting an error or a timeout.
     */
     func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
 

@@ -19,12 +19,12 @@ class MapListViewController: UITabBarController {
     }
 
     /*
-    This Closure is for a query that returns both the count of all the student locations, and the most
-    recent 100 student locations.
+    This Closure is for a query that returns both the count of all the student locations, and 
+    the most recent 100 student locations.
 
-    First, check for Connection Failure.  Next, try to parse the data and report an error if it fails.
-    Finally, grab the count first, then the top-level user dictionary and pass it to the StudentManager 
-    singleton to be parsed
+    First, check for Connection Failure.  Next, try to parse the data and report an error if 
+    it fails. Finally, grab the count first, then the top-level user dictionary and pass it 
+    to the StudentManager singleton to be parsed
     */
     func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         if error != nil {

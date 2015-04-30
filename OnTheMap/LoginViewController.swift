@@ -54,10 +54,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
 
     /*
-        First, restore the UI.  Next, check for Connection Failure.  Third, try to parse the data and
-        report error if it fails.  Fourth, grab the user key and session ID from the parsed data or 
-        report a bad login.  Finally, ask the NetClient to request the user data from the Udacity API,
-        passing in the next closure.
+        First, restore the UI.  Next, check for Connection Failure.  Third, try to parse the 
+        data and report error if it fails.  Fourth, grab the user key and session ID from 
+        the parsed data or report a bad login.  Finally, ask the NetClient to request the 
+        user data from the Udacity API, passing in the next closure.
     */
     func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
@@ -93,10 +93,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
 
     /*
-        First, check for Connection Failure.  Next, try to parse the data and report error if it fails.  
-        Third, grab the user name and email from the parsed data.  Next, initiate a NetClient background
-        queue request for the location list, passing in the next closure.  Finally load the Map/List 
-        controller in the main queue.
+        First, check for Connection Failure.  Next, try to parse the data and report error 
+        if it fails. Third, grab the user name and email from the parsed data.  Next, 
+        initiate a NetClient background queue request for the location list, passing in 
+        the next closure.  Finally load the Map/List controller in the main queue.
     */
     func publicUserDataClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
         if error != nil {
@@ -117,9 +117,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
 
             /* 
-                Use a background queue to query the Parse API.  It queries both the total count of all Student
-                Locations, the first 100 Student Locations.  At the same time on the main queue, load the
-                Map & List tab controller.  Here is how I learned to use background queues:
+                Use a background queue to query the Parse API.  It queries both the total count 
+                of all Student Locations, the first 100 Student Locations.  At the same time 
+                on the main queue, load the Map & List tab controller.  Here is how I learned 
+                to use background queues:
                 http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
             */
 
@@ -145,10 +146,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
 
     /*
-    Assume that Udacity email and password must be at least four characters and that login 
-    has '@' and '.'
-    I did a minimal amount of validation here because it's really hard to validate email addresses 
-    and it's not in the spec to do so.
+    Assume that Udacity email and password must be at least four characters and that login
+    has '@' and '.'  I did a minimal amount of validation here because it's really hard to 
+    validate email addresses and it's not in the spec to do so.
     http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address?rq=1
     */
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange,
