@@ -126,7 +126,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     @IBAction func linkBrowseAction() {
         showHideBrowserButton((linkBrowseButton.currentTitle == "Hide Browser"))
-        if !currentURLStringIsValid { triggerWebViewForURLCheck(linkTextField.text) }
+        if !currentURLStringIsValid && linkTextField.text != "" { triggerWebViewForURLCheck(linkTextField.text) }
     }
 
 
