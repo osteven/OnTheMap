@@ -169,6 +169,8 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
                 self.webView.loadRequest(requestObj)
                 manageUIForActiveWebView(true)
             }
+        } else {
+            UICommon.errorAlert("URL Validation Failure", message: "That doesn't look like a valid URL", inViewController: self)
         }
     }
 
