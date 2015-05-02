@@ -15,9 +15,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var loginTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var loginContainerView: UIView!
 
     private let currentUser = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
-
+    private var errorMessage = ""
 
 
     // MARK: -
@@ -87,9 +88,31 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
         } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
             // else, found an error message in the response
+            self.errorMessage = "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]"
+            dispatch_async(dispatch_get_main_queue(), { self.reportLoginFailureWithShake() })
             dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
-            UICommon.errorAlert("Login Failure", message: "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]", inViewController: self)
         }
+    }
+
+    //http://stackoverflow.com/questions/3844557/uiview-shake-animation
+    private func reportLoginFailureWithShake() {
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.delegate = self
+        animation.duration = 0.10
+        animation.repeatCount = 6
+        animation.autoreverses = true
+
+        let fromPoint = CGPointMake(loginContainerView.center.x - 20.0, loginContainerView.center.y)
+        animation.fromValue = NSValue(CGPoint: fromPoint)
+
+        let toPoint = CGPointMake(loginContainerView.center.x + 20.0, loginContainerView.center.y)
+        animation.toValue = NSValue(CGPoint: toPoint)
+
+        loginContainerView.layer.addAnimation(animation, forKey: "position")
+    }
+
+    override func animationDidStop(anim: CAAnimation!, finished flag: Bool) {
+        UICommon.errorAlert("Login Failure", message: self.errorMessage, inViewController: self)
     }
 
     /*
@@ -140,7 +163,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: text field and login button management
 
     func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        if count(loginTextField.text) > 0 && count(passwordTextField.text) > 0 {
+            textField.resignFirstResponder()
+            dispatch_async(dispatch_get_main_queue(), { self.doLogin() })
+            return true
+        }
+        if textField == loginTextField { passwordTextField.becomeFirstResponder() }
         return true
     }
 

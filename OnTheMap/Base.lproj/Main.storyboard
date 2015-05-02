@@ -156,6 +156,7 @@
                     </view>
                     <connections>
                         <outlet property="loginButton" destination="jXf-8x-hhU" id="jKC-er-dr8"/>
+                        <outlet property="loginContainerView" destination="o1P-Jy-edx" id="iPz-kB-EKA"/>
                         <outlet property="loginTextField" destination="S4y-du-Dlg" id="aeD-SA-bmK"/>
                         <outlet property="passwordTextField" destination="Sev-s7-a1c" id="ch8-o5-oRc"/>
                     </connections>
