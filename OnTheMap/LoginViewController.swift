@@ -60,37 +60,46 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         the parsed data or report a bad login.  Finally, ask the NetClient to request the 
         user data from the Udacity API, passing in the next closure.
     */
-    func sessionAndUserKeyClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
+    func sessionAndUserKeyClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+        var stillNeedLogin = true
+        defer { dispatch_async(dispatch_get_main_queue(), { self.manageUI(stillNeedLogin) })  }
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        if error != nil {
-            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
+        if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
+            return
+        }
+        guard let data = data else {
+            UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity", inViewController: self)
             return
         }
 
         let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
-        var parseError: NSError? = nil
-        let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let err = parseError {
-            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
-            UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(err.localizedDescription)]", inViewController: self)
+        let parsedDict: NSDictionary?
+        do {
+            try parsedDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+        } catch let parseError as NSError {
+            UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(parseError.localizedDescription)]", inViewController: self)
+            return
+        }
+        guard let topDict = parsedDict else {
+            UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity", inViewController: self)
             return
         }
 
-        if let accountDict = topDict!["account"] as? NSDictionary, let sessionDict = topDict!["session"] as? NSDictionary {
+
+        if let accountDict = topDict["account"] as? NSDictionary, let sessionDict = topDict["session"] as? NSDictionary {
             if let userKey = accountDict["key"] as? String {
+                stillNeedLogin = false
                 self.currentUser.userKey = userKey
                 if let sess = sessionDict["id"] as? String { self.currentUser.sessionID = sess }
                 NetClient.sharedInstance.loadPublicUserData(userKey, completionHandler: publicUserDataClosure)
             } else {
-                dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
                 UICommon.errorAlert("Udacity Login Failure", message: "The Udacity API failed to return a User Key", inViewController: self)
             }
-        } else if let status = topDict!["status"] as? Int, let errorStr = topDict!["error"] as? NSString {
+        } else if let status = topDict["status"] as? Int, let errorStr = topDict["error"] as? NSString {
             // else, found an error message in the response
             self.errorMessage = "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]"
             dispatch_async(dispatch_get_main_queue(), { self.reportLoginFailureWithShake() })
-            dispatch_async(dispatch_get_main_queue(), { self.manageUI(true) })
         }
     }
 
@@ -111,7 +120,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginContainerView.layer.addAnimation(animation, forKey: "position")
     }
 
-    override func animationDidStop(anim: CAAnimation!, finished flag: Bool) {
+    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         UICommon.errorAlert("Login Failure", message: self.errorMessage, inViewController: self)
     }
 
@@ -121,41 +130,57 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         initiate a NetClient background queue request for the location list, passing in 
         the next closure.  Finally load the Map/List controller in the main queue.
     */
-    func publicUserDataClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil {
-            UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]", inViewController: self)
+    func publicUserDataClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+        if let error = error {
+            UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]",
+                inViewController: self)
+            return
+        }
+        guard let data = data else {
+            UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data", inViewController: self)
             return
         }
         let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
-        var parseError: NSError? = nil
-        let topDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let err = parseError {
-            UICommon.errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(err.localizedDescription)]", inViewController: self)
+
+
+
+        let parsedDict: NSDictionary?
+        do {
+            try parsedDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+        } catch let parseError as NSError {
+            UICommon.errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(parseError.localizedDescription)]",
+                inViewController: self)
+            return
+        }
+        guard let topDict = parsedDict else {
+            UICommon.errorAlert("Parse Failure", message: "Could not parse user data from Udacity", inViewController: self)
             return
         }
 
-        if let userDict = topDict!["user"] as? [String: AnyObject] {
-
-            self.currentUser.loadPublicData(userDict)
-            let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapAndListTabController") as! MapListViewController
-
-            /* 
-                Use a background queue to query the Parse API.  It queries both the total count 
-                of all Student Locations, the first 100 Student Locations.  At the same time 
-                on the main queue, load the Map & List tab controller.  Here is how I learned 
-                to use background queues:
-                http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
-            */
-
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { NetClient.sharedInstance.loadStudentLocations(controller.studentLocationClosure) })
-
-            dispatch_async(dispatch_get_main_queue(), {
-                self.presentViewController(controller, animated: true, completion: nil)
-            })
-
-        } else {
-            UICommon.errorAlert("Connection Failure", message: "Incomplete data from Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
+        guard let userDict = topDict["user"] as? [String: AnyObject] else {
+            UICommon.errorAlert("Parse Failure", message: "Could not get user data from Udacity", inViewController: self)
+            return
         }
+
+        self.currentUser.loadPublicData(userDict)
+        guard let controller = self.storyboard?.instantiateViewControllerWithIdentifier("MapAndListTabController")
+            as? MapListViewController else { fatalError("COuld not find MapAndListTabController") }
+
+        /*
+        Use a background queue to query the Parse API.  It queries both the total count of all Student Locations, 
+        the first 100 Student Locations.  At the same time on the main queue, load the Map & List tab controller.  
+        Here is how I learned to use background queues:
+        http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
+        */
+
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+            NetClient.sharedInstance.loadStudentLocations(controller.studentLocationClosure)
+        }
+
+        dispatch_async(dispatch_get_main_queue()) {
+            self.presentViewController(controller, animated: true, completion: nil)
+        }
+
     }
 
 
@@ -163,7 +188,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: text field and login button management
 
     func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if count(loginTextField.text) > 0 && count(passwordTextField.text) > 0 {
+        guard let loginText = loginTextField.text, passwordText = passwordTextField.text else { /* Cannot happen? */ return true }
+        if loginText.characters.count > 0 && passwordText.characters.count > 0 {
             textField.resignFirstResponder()
             dispatch_async(dispatch_get_main_queue(), { self.doLogin() })
             return true
@@ -183,8 +209,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         replacementString string: String) -> Bool {
 
         var enableLogin: Bool = false
-        var newPasswordText: NSString = passwordTextField.text
-        var newLoginText: NSString = loginTextField.text
+        var newPasswordText: NSString = passwordTextField.text ?? ""
+        var newLoginText: NSString = loginTextField.text ?? ""
 
         if textField == loginTextField {
             newLoginText = newLoginText.stringByReplacingCharactersInRange(range, withString: string)

@@ -50,7 +50,7 @@ struct UICommon {
         view.backgroundColor = UIColor.clearColor()
         let colorTop = UIColor(red: 0.984, green: 0.605, blue: 0.168, alpha: 1.0).CGColor
         let colorBottom = UIColor(red: 0.984, green: 0.438, blue: 0.129, alpha: 1.0).CGColor
-        var backgroundGradient = CAGradientLayer()
+        let backgroundGradient = CAGradientLayer()
         backgroundGradient.colors = [colorTop, colorBottom]
         backgroundGradient.locations = [0.0, 1.0]
         backgroundGradient.frame = view.frame

@@ -18,7 +18,7 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
         /*
@@ -53,7 +53,7 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if let table = self.tableView {
             dispatch_async(dispatch_get_main_queue(), {
                 table.reloadData()
-                if let indexPath = table.indexPathForSelectedRow() {
+                if let indexPath = table.indexPathForSelectedRow {
                     table.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: .Top)
                 }
             })
@@ -72,20 +72,20 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("UniqueStudentCell") as? UITableViewCell
+        guard let cell = tableView.dequeueReusableCellWithIdentifier("UniqueStudentCell") else { fatalError("could not load UniqueStudentCell") }
         if let uniqueArray = uniqueStudentIDArray {
             let studentID = uniqueArray[indexPath.row]
             let studentName = StudentManager.sharedInstance.getStudentNameForUniqueID(studentID)
-            cell!.textLabel?.text = studentName
-            if let detailTextLabel = cell!.detailTextLabel {
+            cell.textLabel?.text = studentName
+            if let detailTextLabel = cell.detailTextLabel {
                 let numLocs = StudentManager.sharedInstance.countLocationsForUniqueID(studentID)
                 detailTextLabel.text = numLocs == 1 ? "1 location" : "\(numLocs) locations"
              }
         } else {
-            cell!.textLabel?.text = "Error: Students not loaded"
+            cell.textLabel?.text = "Error: Students not loaded"
         }
 
-        return cell!
+        return cell
     }
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

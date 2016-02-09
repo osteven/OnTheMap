@@ -26,15 +26,24 @@ class MapListViewController: UITabBarController {
     it fails. Finally, grab the count first, then the top-level user dictionary and pass it 
     to the StudentManager singleton to be parsed
     */
-    func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
-        if error != nil {
+    func studentLocationClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+        if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self)
             return
         }
-        var parseError: NSError? = nil
-        let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? NSDictionary
-        if let err = parseError {
-            UICommon.errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(err.localizedDescription)]", inViewController: self)
+        guard let data = data else {
+            UICommon.errorAlert("Connection Failure", message: "Failed to get Parse API student location data", inViewController: self)
+            return
+        }
+        let parsedDict: NSDictionary?
+        do {
+            try parsedDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+        } catch let parseError as NSError {
+            UICommon.errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(parseError.localizedDescription)]", inViewController: self)
+            return
+        }
+        guard let topDict = parsedDict else {
+            UICommon.errorAlert("Parse Failure", message: "Could not load location data from Parse", inViewController: self)
             return
         }
 
@@ -42,10 +51,10 @@ class MapListViewController: UITabBarController {
             Parse returns a results structure that looks like this:
                 topDict=Optional({ count = 127; results = ( ... ) })
         */
-        if let count = topDict!["count"] as? Int {
+        if let count = topDict["count"] as? Int {
             StudentManager.sharedInstance.countOfAllStudentLocations = count
 
-            if let userDict = topDict!["results"] as? [[String: AnyObject]] {
+            if let userDict = topDict["results"] as? [[String: AnyObject]] {
                 if userDict.count > 0 {
                     StudentManager.sharedInstance.load(userDict, requestedBatchSize: NetClient.PARSE_API_BATCH_SIZE)
 

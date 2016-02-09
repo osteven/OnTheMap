@@ -22,7 +22,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     // MARK: -
     // MARK: loading and unloading
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
         /*
@@ -81,17 +81,17 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
 
         /*
-            The tab bar item for the list tab is not showing up.  It delays several minutes before 
-            drawing as described at this link:
-            http://stackoverflow.com/questions/25995112/tabbaritem-icon-does-not-appear-immediately-in-ios-8
-            I can force it to draw by redundantly setting the image in code.
+        The tab bar item for the list tab is not showing up.  It delays several minutes before
+        drawing as described at this link:
+        http://stackoverflow.com/questions/25995112/tabbaritem-icon-does-not-appear-immediately-in-ios-8
+        I can force it to draw by redundantly setting the image in code.
         */
         if let array = self.tabBarController?.tabBar.items {
-            if let firstTabBarItem = array[0] as? UITabBarItem, secondTabBarItem = array[1] as? UITabBarItem, thirdTabBarItem = array[2] as? UITabBarItem {
-                firstTabBarItem.image = UIImage(named: "Map.pdf")
-                secondTabBarItem.image = UIImage(named: "List.pdf")
-                thirdTabBarItem.image = UIImage(named: "Target.png")
-            }
+            let firstTabBarItem = array[0], secondTabBarItem = array[1], thirdTabBarItem = array[2]
+            firstTabBarItem.image = UIImage(named: "Map.pdf")
+            secondTabBarItem.image = UIImage(named: "List.pdf")
+            thirdTabBarItem.image = UIImage(named: "Target.png")
+
         }
     }
 
@@ -115,7 +115,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: -
     // MARK: MKMapViewDelegate support
 
-    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
 
         let reuseId = "pin"
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
@@ -123,34 +123,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = true
             pinView!.pinColor = .Red
-            pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
+            pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
         } else {
             pinView!.annotation = annotation
         }
-
         return pinView
     }
 
-    func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if control == annotationView.rightCalloutAccessoryView {
-            let app = UIApplication.sharedApplication()
-
-            /*
-            Wrap the openURL call in a delayed dispatch in order to avoid the error:
-            <Snapshotting a view that has not been rendered results in an empty snapshot.
-            Ensure your view has been rendered at least once before snapshotting or snapshot 
-            after screen updates.>
-            It seems to be a similar problem to this:
-            http://stackoverflow.com/questions/25884801/ios-8-snapshotting-a-view-that-has-not-been-rendered-results-in-an-empty-snapsho
-            
-            Update: This solution does not work after all.
-            */
-            let delayInSeconds = Int64(0.4 * Double(NSEC_PER_SEC));
-            dispatch_time(DISPATCH_TIME_NOW, delayInSeconds);
-            dispatch_async(dispatch_get_main_queue(), {
-                app.openURL(NSURL(string: annotationView.annotation.subtitle!)!)
-            })
-        }
+    
+    func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if control != annotationView.rightCalloutAccessoryView { return }
+        let app = UIApplication.sharedApplication()
+        guard let sub = annotationView.annotation?.subtitle, let urlString = sub else { print("could not load url from annotation"); return }
+        guard let url = NSURL(string: urlString) else { print("could not create url from annotation"); return }
+        dispatch_async(dispatch_get_main_queue()) { app.openURL(url) }
     }
 
 

@@ -19,7 +19,7 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     // MARK: -
     // MARK: loading and unloading
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
         /*
@@ -91,19 +91,19 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("StudentListCell") as? UITableViewCell
+        guard let cell = tableView.dequeueReusableCellWithIdentifier("StudentListCell") else { fatalError("Could not load StudentListCell") }
         if let student = StudentManager.sharedInstance.studentAtIndex(indexPath.row) {
-            cell!.textLabel?.text = student.description
-            if let detailTextLabel = cell!.detailTextLabel {
+            cell.textLabel?.text = student.description
+            if let detailTextLabel = cell.detailTextLabel {
                 detailTextLabel.text = student.mapString
             }
         } else {
             // this should never happen because the numberOfStudents() will return zero
-            cell!.textLabel?.text = "Error: Students not loaded"
+            cell.textLabel?.text = "Error: Students not loaded"
         }
 
-        cell!.imageView?.image = pinImage
-        return cell!
+        cell.imageView?.image = pinImage
+        return cell
     }
 
 

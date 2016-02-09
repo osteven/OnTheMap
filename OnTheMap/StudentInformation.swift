@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 
 
-struct StudentInformation: Printable {
+struct StudentInformation: CustomStringConvertible {
 
     let uniqueKey: String
     let firstName: String

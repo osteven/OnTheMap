@@ -11,7 +11,7 @@ import MapKit
 
 let NOTIFICATION_STUDENTS_LOADED = "com.o2l.studentmanagerloaded"
 
-class StudentManager: Printable {
+class StudentManager: CustomStringConvertible {
 
     // MARK: -
     // MARK: Properties
@@ -49,7 +49,7 @@ class StudentManager: Printable {
         return countOfReturnedStudentLocations <= countOfAllStudentLocations
     }
 
-    func getAnnotations() -> [MKPointAnnotation]? {
+    func getAnnotations() -> [MKPointAnnotation] {
         let returnTheseAnnotations = newAnnotationsArray
         newAnnotationsArray.removeAll()
         return returnTheseAnnotations
@@ -91,7 +91,7 @@ class StudentManager: Printable {
     
 
     func getUniqueIDs() -> Set<String> {
-        var array = studentInfoArray.map { return $0.uniqueKey }
+        let array = studentInfoArray.map { return $0.uniqueKey }
         return Set(array)
     }
 

@@ -8,7 +8,9 @@
 
 import Foundation
 
-public typealias TaskRequestClosure = (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void
+public typealias TaskRequestClosure = (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void
+
+
 
 
 class NetClient {
@@ -47,7 +49,7 @@ class NetClient {
             urlVars += [key + "=" + "\(escapedValue!)"]
         }
 
-        return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
+        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
     }
 
 

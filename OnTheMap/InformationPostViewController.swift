@@ -74,19 +74,21 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             }
 
             // if the location find string is empty, disable the find location button
-            var newText: NSString = whereStudyingTextField.text
+            var newText: NSString = whereStudyingTextField.text ?? ""
             newText = newText.stringByReplacingCharactersInRange(range, withString: string)
             manageFindButton(newText.length > 0)
             return true
     }
 
     @IBAction func checkAction() {
-        triggerWebViewForURLCheck(linkTextField.text)
+        guard let linkText = linkTextField.text else { return }
+        triggerWebViewForURLCheck(linkText)
     }
 
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if textField == linkTextField {
-            triggerWebViewForURLCheck(linkTextField.text)
+            guard let textBody = textField.text else { return /* I don't think this can happen */ false }
+            triggerWebViewForURLCheck(textBody)
         } else if textField == whereStudyingTextField  {
             if findOnMapButton.enabled { findOnTheMap() }
         }
@@ -126,7 +128,8 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     @IBAction func linkBrowseAction() {
         showHideBrowserButton((linkBrowseButton.currentTitle == "Hide Browser"))
-        if !currentURLStringIsValid && linkTextField.text != "" { triggerWebViewForURLCheck(linkTextField.text) }
+        guard let linkText = linkTextField.text else { return }
+        if !currentURLStringIsValid && linkText != "" { triggerWebViewForURLCheck(linkText) }
     }
 
 
@@ -197,7 +200,8 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         errors (usually Cancelled and CannotConnectToHost) even thought the web page 
         eventually loads.  And sometimes it hangs without reporting an error or a timeout.
     */
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
+        guard let error = error else { /* how could this trugger if the error is nil? */ return }
 
         // I think these errors are unnecessarily triggered if the host forwards the request
         if error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled { return }
@@ -259,43 +263,46 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
     @IBAction func findOnTheMap() {
 
-        if let location = whereStudyingTextField.text {
-            findOnMapView.alpha = 0.2
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-            CLGeocoder().geocodeAddressString(location, completionHandler:
-                {(placemarks, error) in
-                    UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-                    self.findOnMapView.alpha = 1.0
-                    if error != nil  {
-                        self.reportGeocodeError(location, error: error)
-                        return
-                    }
-                    let pmArray = placemarks as? [CLPlacemark]
-                    if pmArray == nil || pmArray!.count <= 0 {
-                        // I don't know if this will ever happen
-                        UICommon.errorAlert("Geocode Failure", message: "No geocode for \(location)", inViewController: self)
-                        return
-                    }
-                    let pm = pmArray![0]
-                    let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
-                    user.mapString = location
-                    user.latitude = pm.location.coordinate.latitude
-                    user.longitude = pm.location.coordinate.longitude
-                    self.mapView.hidden = false
+        guard let locationName = whereStudyingTextField.text else { /* I don't think this will ever happen */ return }
 
-                    let annotation = MKPointAnnotation()
-                    annotation.coordinate = CLLocationCoordinate2D(latitude: user.latitude, longitude: user.longitude)
-                    let fname = user.firstName == "" ? "?" : user.firstName
-                    let lname = user.lastName == "" ?  "?" : user.lastName
-                    annotation.title = "\(fname) \(lname)"
-                    self.mapView.addAnnotation(annotation)
-                    let span = MKCoordinateSpanMake(0.1, 0.1)
-                    let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
-                    self.mapView.setRegion(region, animated: true)
-                    self.swapLinkAndFindView(false)
-            })
+        findOnMapView.alpha = 0.2
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        CLGeocoder().geocodeAddressString(locationName, completionHandler:
+            {(placemarks, error) in
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                self.findOnMapView.alpha = 1.0
+                if let error = error  {
+                    self.reportGeocodeError(locationName, error: error)
+                    return
+                }
+                guard let pmArray = placemarks where pmArray.count > 0 else {
+                    // I don't know if this will ever happen
+                    UICommon.errorAlert("Geocode Failure", message: "No geocode for \(locationName)", inViewController: self)
+                    return
+                }
+                let pm = pmArray[0]
+                guard let placeMarkLoc = pm.location else {
+                    // Again, I don't know if this will ever happen
+                    UICommon.errorAlert("Geocode Failure", message: "No geocode for \(locationName)", inViewController: self)
+                    return
+                }
+                let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+                user.mapString = locationName
+                user.latitude = placeMarkLoc.coordinate.latitude
+                user.longitude = placeMarkLoc.coordinate.longitude
+                self.mapView.hidden = false
 
-        }
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = CLLocationCoordinate2D(latitude: user.latitude, longitude: user.longitude)
+                let fname = user.firstName == "" ? "?" : user.firstName
+                let lname = user.lastName == "" ?  "?" : user.lastName
+                annotation.title = "\(fname) \(lname)"
+                self.mapView.addAnnotation(annotation)
+                let span = MKCoordinateSpanMake(0.1, 0.1)
+                let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
+                self.mapView.setRegion(region, animated: true)
+                self.swapLinkAndFindView(false)
+        })
     }
 
 
@@ -306,46 +313,57 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
 
     @IBAction func saveData() {
-        if currentURLStringIsValid {
-            let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
-            user.mediaURL = linkTextField.text
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-            self.manageUIForActiveWebView(true)
-            self.manageUIReadyForSubmit(true)
-            NetClient.sharedInstance.postStudentLocation(user, completionHandler: studentLocationClosure)
-        } else {
+        if !currentURLStringIsValid {
             UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a valid link", inViewController: self)
             return
         }
+        guard let linkText = linkTextField.text else {
+            // Again, I don't know if this will ever happen
+            UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a link", inViewController: self)
+            return
+        }
+        let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+        user.mediaURL = linkText
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        self.manageUIForActiveWebView(true)
+        self.manageUIReadyForSubmit(true)
+        NetClient.sharedInstance.postStudentLocation(user, completionHandler: studentLocationClosure)
     }
 
 
-    func studentLocationClosure(data: NSData!, response: NSURLResponse!, error: NSError!) -> Void {
+    func studentLocationClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
 
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        if error != nil {
+        if let error = error {
             UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to post to Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self, handler: postAlertHandler)
             return
         }
-        var parseError: NSError? = nil
-        if let topDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError) as? [String: AnyObject] {
-            if let err = parseError {
-                UICommon.errorAlertWithHandler("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(err.localizedDescription)]", inViewController: self, handler: postAlertHandler)
-                return
-            }
-
-            let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
-            user.updateAfterSave(topDict)
-            let newStudent = StudentManager.sharedInstance.appendSavedUser(user)
-            NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_MAP_SCROLL, object: newStudent.annotation)
-            dispatch_async(dispatch_get_main_queue(), {
-                self.manageUIForActiveWebView(false)
-                self.manageUIReadyForSubmit(true)
-            })
-            self.dismissViewControllerAnimated(true, completion: nil)
-        } else {
-            UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to received acknowledgment from Parse API", inViewController: self, handler: postAlertHandler)
+        guard let data = data else {
+            UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to post to Parse API student location: not response", inViewController: self, handler: postAlertHandler)
+            return
         }
+
+        let parsedDict: [String: AnyObject]?
+        do {
+            try parsedDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments) as? [String: AnyObject]
+        } catch let parseError as NSError {
+            UICommon.errorAlertWithHandler("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(parseError.localizedDescription)]", inViewController: self, handler: postAlertHandler)
+            return
+        }
+        guard let topDict = parsedDict else {
+            UICommon.errorAlertWithHandler("Parse API Failure", message: "Failed to received acknowledgment from Parse API", inViewController: self, handler: postAlertHandler)
+            return
+        }
+
+        let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+        user.updateAfterSave(topDict)
+        let newStudent = StudentManager.sharedInstance.appendSavedUser(user)
+        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_MAP_SCROLL, object: newStudent.annotation)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.manageUIForActiveWebView(false)
+            self.manageUIReadyForSubmit(true)
+        })
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 
 
