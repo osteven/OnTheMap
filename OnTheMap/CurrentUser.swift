@@ -46,8 +46,7 @@ class CurrentUser {
         if let first = dictionary["first_name"] as? String {
             self.firstName = first
         }
-        if let emailDict = dictionary["email"] as? NSDictionary,
-            let addr = dictionary["address"] as? String {
+        if let addr = dictionary["address"] as? String {
             self.email = addr
         }
     }

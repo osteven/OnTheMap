@@ -12,7 +12,6 @@
 		B035E2BC1ADF25B400D13596 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B035E2BA1ADF25B400D13596 /* Main.storyboard */; };
 		B035E2BE1ADF25B400D13596 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B035E2BD1ADF25B400D13596 /* Images.xcassets */; };
 		B035E2C11ADF25B400D13596 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B035E2BF1ADF25B400D13596 /* LaunchScreen.xib */; };
-		B035E2CD1ADF25B500D13596 /* OnTheMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2CC1ADF25B500D13596 /* OnTheMapTests.swift */; };
 		B035E2D71AE02E1D00D13596 /* StudentInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D61AE02E1D00D13596 /* StudentInformation.swift */; };
 		B035E2D91AE040A900D13596 /* StudentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B035E2D81AE040A900D13596 /* StudentManager.swift */; };
 		B03984591AF01AEA005959CA /* AreaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03984581AF01AEA005959CA /* AreaViewController.swift */; };
@@ -26,16 +25,6 @@
 		B0EBA60B1AEAC2360080FE76 /* InformationPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBA60A1AEAC2360080FE76 /* InformationPostViewController.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		B035E2C71ADF25B400D13596 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B035E2A91ADF25B400D13596 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B035E2B01ADF25B400D13596;
-			remoteInfo = OnTheMap;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		B035E2B11ADF25B400D13596 /* OnTheMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnTheMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B035E2B51ADF25B400D13596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -44,9 +33,6 @@
 		B035E2BB1ADF25B400D13596 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B035E2BD1ADF25B400D13596 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B035E2C01ADF25B400D13596 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		B035E2C61ADF25B400D13596 /* OnTheMapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnTheMapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B035E2CB1ADF25B500D13596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B035E2CC1ADF25B500D13596 /* OnTheMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnTheMapTests.swift; sourceTree = "<group>"; };
 		B035E2D61AE02E1D00D13596 /* StudentInformation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentInformation.swift; sourceTree = "<group>"; };
 		B035E2D81AE040A900D13596 /* StudentManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentManager.swift; sourceTree = "<group>"; };
 		B035E2DA1AE0500400D13596 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
@@ -72,13 +58,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B035E2C31ADF25B400D13596 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -87,7 +66,6 @@
 			children = (
 				B035E2B31ADF25B400D13596 /* OnTheMap */,
 				B03984601AF13F6F005959CA /* Frameworks */,
-				B035E2C91ADF25B500D13596 /* OnTheMapTests */,
 				B035E2B21ADF25B400D13596 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,7 +74,6 @@
 			isa = PBXGroup;
 			children = (
 				B035E2B11ADF25B400D13596 /* OnTheMap.app */,
-				B035E2C61ADF25B400D13596 /* OnTheMapTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -135,23 +112,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		B035E2C91ADF25B500D13596 /* OnTheMapTests */ = {
-			isa = PBXGroup;
-			children = (
-				B035E2CC1ADF25B500D13596 /* OnTheMapTests.swift */,
-				B035E2CA1ADF25B500D13596 /* Supporting Files */,
-			);
-			path = OnTheMapTests;
-			sourceTree = "<group>";
-		};
-		B035E2CA1ADF25B500D13596 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				B035E2CB1ADF25B500D13596 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		B03984601AF13F6F005959CA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -181,24 +141,6 @@
 			productReference = B035E2B11ADF25B400D13596 /* OnTheMap.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B035E2C51ADF25B400D13596 /* OnTheMapTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B035E2D31ADF25B500D13596 /* Build configuration list for PBXNativeTarget "OnTheMapTests" */;
-			buildPhases = (
-				B035E2C21ADF25B400D13596 /* Sources */,
-				B035E2C31ADF25B400D13596 /* Frameworks */,
-				B035E2C41ADF25B400D13596 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B035E2C81ADF25B400D13596 /* PBXTargetDependency */,
-			);
-			name = OnTheMapTests;
-			productName = OnTheMapTests;
-			productReference = B035E2C61ADF25B400D13596 /* OnTheMapTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -212,10 +154,6 @@
 				TargetAttributes = {
 					B035E2B01ADF25B400D13596 = {
 						CreatedOnToolsVersion = 6.3;
-					};
-					B035E2C51ADF25B400D13596 = {
-						CreatedOnToolsVersion = 6.3;
-						TestTargetID = B035E2B01ADF25B400D13596;
 					};
 				};
 			};
@@ -233,7 +171,6 @@
 			projectRoot = "";
 			targets = (
 				B035E2B01ADF25B400D13596 /* OnTheMap */,
-				B035E2C51ADF25B400D13596 /* OnTheMapTests */,
 			);
 		};
 /* End PBXProject section */
@@ -246,13 +183,6 @@
 				B035E2BC1ADF25B400D13596 /* Main.storyboard in Resources */,
 				B035E2C11ADF25B400D13596 /* LaunchScreen.xib in Resources */,
 				B035E2BE1ADF25B400D13596 /* Images.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B035E2C41ADF25B400D13596 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,23 +208,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B035E2C21ADF25B400D13596 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B035E2CD1ADF25B500D13596 /* OnTheMapTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		B035E2C81ADF25B400D13596 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B035E2B01ADF25B400D13596 /* OnTheMap */;
-			targetProxy = B035E2C71ADF25B400D13596 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		B035E2BA1ADF25B400D13596 /* Main.storyboard */ = {
@@ -401,10 +315,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/steven/Documents/FacebookSDK,
-				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -415,47 +325,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/steven/Documents/FacebookSDK,
-				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		B035E2D41ADF25B500D13596 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = OnTheMapTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OnTheMap.app/OnTheMap";
-			};
-			name = Debug;
-		};
-		B035E2D51ADF25B500D13596 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = OnTheMapTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OnTheMap.app/OnTheMap";
 			};
 			name = Release;
 		};
@@ -476,15 +348,6 @@
 			buildConfigurations = (
 				B035E2D11ADF25B500D13596 /* Debug */,
 				B035E2D21ADF25B500D13596 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B035E2D31ADF25B500D13596 /* Build configuration list for PBXNativeTarget "OnTheMapTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B035E2D41ADF25B500D13596 /* Debug */,
-				B035E2D51ADF25B500D13596 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
