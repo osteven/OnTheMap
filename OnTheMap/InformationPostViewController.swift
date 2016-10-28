@@ -162,7 +162,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     Attempt to load the user-entered URL string into the web view.
     */
     fileprivate func triggerWebViewForURLCheck(_ rawURLString: String) {
-        if let components = URLComponents(string: rawURLString) {
+        if var components = URLComponents(string: rawURLString) {
             // in case they didn't enter the 'http://'
             if components.scheme == nil { components.scheme = "http" }
             if let url = components.url {
@@ -201,7 +201,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         eventually loads.  And sometimes it hangs without reporting an error or a timeout.
     */
     func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
-        guard let error = error else { /* how could this trugger if the error is nil? */ return }
+        let error = error as NSError
 
         // I think these errors are unnecessarily triggered if the host forwards the request
         if error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled { return }
@@ -331,7 +331,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     }
 
 
-    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
+    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: Error?) -> Void {
 
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
         if let error = error {
