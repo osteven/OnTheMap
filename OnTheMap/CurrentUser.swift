@@ -38,7 +38,7 @@ class CurrentUser {
             "\"longitude\": \(longitude)" + "}"
     }
 
-    func loadPublicData(dictionary: [String: AnyObject]) {
+    func loadPublicData(_ dictionary: [String: AnyObject]) {
 
         if let last = dictionary["last_name"] as? String {
             self.lastName =  last
@@ -53,7 +53,7 @@ class CurrentUser {
 
     // Optional({"createdAt":"2015-04-27T20:53:00.872Z","objectId":"i3f1ijVWtO"})
 
-    func updateAfterSave(dictionary: [String: AnyObject]) {
+    func updateAfterSave(_ dictionary: [String: AnyObject]) {
         if let objectID = dictionary["objectId"] as? String {
             self.objectID = objectID
         }

@@ -25,18 +25,18 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
         If the student information becomes refreshed, this view's table doesn't know about it.  So
         we should listen for the notification.
         */
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "studentsLoadedNotification:",
-            name: NOTIFICATION_STUDENTS_LOADED, object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(AreaViewController.studentsLoadedNotification(_:)),
+            name: NSNotification.Name(rawValue: NOTIFICATION_STUDENTS_LOADED), object: nil)
     }
 
     deinit {
         // http://natashatherobot.com/ios8-where-to-remove-observer-for-nsnotification-in-swift/su
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let uniqueSet = StudentManager.sharedInstance.getUniqueIDs()
         uniqueStudentIDArray = Array(uniqueSet)
@@ -47,14 +47,14 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
     because it will be loaded by the time the user switches to that tab.
     This is needed for a reload after a refresh.
     */
-    func studentsLoadedNotification(notification: NSNotification) {
+    func studentsLoadedNotification(_ notification: Notification) {
 
         // don't reference self.tableView if it hasn't been created yet
         if let table = self.tableView {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 table.reloadData()
                 if let indexPath = table.indexPathForSelectedRow {
-                    table.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: .Top)
+                    table.selectRow(at: indexPath, animated: false, scrollPosition: .top)
                 }
             })
         }
@@ -65,14 +65,14 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let uniqueSetCount = uniqueStudentIDArray?.count ?? 0
         return uniqueSetCount
     }
 
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCellWithIdentifier("UniqueStudentCell") else { fatalError("could not load UniqueStudentCell") }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "UniqueStudentCell") else { fatalError("could not load UniqueStudentCell") }
         if let uniqueArray = uniqueStudentIDArray {
             let studentID = uniqueArray[indexPath.row]
             let studentName = StudentManager.sharedInstance.getStudentNameForUniqueID(studentID)
@@ -88,7 +88,7 @@ class AreaViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return cell
     }
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         mapView.removeAnnotations(mapView.annotations)
         if let uniqueArray = uniqueStudentIDArray {
             let studentID = uniqueArray[indexPath.row]

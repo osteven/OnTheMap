@@ -13,7 +13,7 @@ class MapListViewController: UITabBarController {
 
     func doRefresh() {
         StudentManager.sharedInstance.removeAll()
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), {
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async(execute: {
             NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure)
         })
     }
@@ -26,7 +26,7 @@ class MapListViewController: UITabBarController {
     it fails. Finally, grab the count first, then the top-level user dictionary and pass it 
     to the StudentManager singleton to be parsed
     */
-    func studentLocationClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
         if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self)
             return
@@ -37,7 +37,7 @@ class MapListViewController: UITabBarController {
         }
         let parsedDict: NSDictionary?
         do {
-            try parsedDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+            try parsedDict = JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary
         } catch let parseError as NSError {
             UICommon.errorAlert("Parse Failure", message: "Could not parse location data from Parse\n\n[\(parseError.localizedDescription)]", inViewController: self)
             return
@@ -59,7 +59,7 @@ class MapListViewController: UITabBarController {
                     StudentManager.sharedInstance.load(userDict, requestedBatchSize: NetClient.PARSE_API_BATCH_SIZE)
 
                     if StudentManager.sharedInstance.canRetrieveMoreStudentLocations() {
-                        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), {
+                        DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async(execute: {
                             NetClient.sharedInstance.loadStudentLocations(self.studentLocationClosure) })
                     }
 

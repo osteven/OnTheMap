@@ -87,7 +87,7 @@ struct StudentInformation: CustomStringConvertible {
     }
 
     /* Helper: Given an array of dictionaries, convert them to an array of StudentInformation objects */
-    static func studentsFromResults(results: [[String: AnyObject]]) -> [StudentInformation] {
+    static func studentsFromResults(_ results: [[String: AnyObject]]) -> [StudentInformation] {
         var students = [StudentInformation]()
 
         for result in results {

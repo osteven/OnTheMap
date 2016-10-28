@@ -154,6 +154,7 @@
 				TargetAttributes = {
 					B035E2B01ADF25B400D13596 = {
 						CreatedOnToolsVersion = 6.3;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -318,6 +319,7 @@
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -328,6 +330,7 @@
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

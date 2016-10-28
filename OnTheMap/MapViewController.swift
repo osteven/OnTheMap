@@ -30,25 +30,25 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         view is being loaded.  This view usually loads first, so we want to be notified when 
         the background thread finishes.
         */
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "studentsLoadedNotification:",
-            name: NOTIFICATION_STUDENTS_LOADED, object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(MapViewController.studentsLoadedNotification(_:)),
+            name: NSNotification.Name(rawValue: NOTIFICATION_STUDENTS_LOADED), object: nil)
 
 
         /*
         After the user posts a new location, scroll the map to show it.
         */
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "mapScrollNotification:",
-            name: NOTIFICATION_MAP_SCROLL, object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(MapViewController.mapScrollNotification(_:)),
+            name: NSNotification.Name(rawValue: NOTIFICATION_MAP_SCROLL), object: nil)
     }
 
     deinit {
         // http://natashatherobot.com/ios8-where-to-remove-observer-for-nsnotification-in-swift/su
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
-    func studentsLoadedNotification(notification: NSNotification) {
+    func studentsLoadedNotification(_ notification: Notification) {
         self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
 
          /*
@@ -56,15 +56,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         reset the center.  This idea came from:
         http://stackoverflow.com/questions/1694654/refresh-mkannotationview-on-a-mkmapview
         */
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             let center = self.mapView.centerCoordinate
             self.mapView.centerCoordinate = center
         })
     }
 
-    func mapScrollNotification(notification: NSNotification) {
+    func mapScrollNotification(_ notification: Notification) {
         if let annotation = notification.object as? MKPointAnnotation {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 let span = MKCoordinateSpanMake(0.2, 0.2)
                 let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
                 self.mapView.setRegion(region, animated: true)
@@ -115,15 +115,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: -
     // MARK: MKMapViewDelegate support
 
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
 
         let reuseId = "pin"
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = true
-            pinView!.pinColor = .Red
-            pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            pinView!.pinColor = .red
+            pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         } else {
             pinView!.annotation = annotation
         }
@@ -131,12 +131,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
 
     
-    func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    func mapView(_ mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control != annotationView.rightCalloutAccessoryView { return }
-        let app = UIApplication.sharedApplication()
+        let app = UIApplication.shared
         guard let sub = annotationView.annotation?.subtitle, let urlString = sub else { print("could not load url from annotation"); return }
-        guard let url = NSURL(string: urlString) else { print("could not create url from annotation"); return }
-        dispatch_async(dispatch_get_main_queue()) { app.openURL(url) }
+        guard let url = URL(string: urlString) else { print("could not create url from annotation"); return }
+        DispatchQueue.main.async { app.openURL(url) }
     }
 
 

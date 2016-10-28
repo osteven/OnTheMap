@@ -17,8 +17,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var loginContainerView: UIView!
 
-    private let currentUser = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
-    private var errorMessage = ""
+    fileprivate let currentUser = (UIApplication.shared.delegate as! AppDelegate).currentUser
+    fileprivate var errorMessage = ""
 
 
     // MARK: -
@@ -44,14 +44,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
     @IBAction func doLogin() {
         if let userName = loginTextField.text, let password = passwordTextField.text {
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+            UIApplication.shared.isNetworkActivityIndicatorVisible = true
             manageUI(false)
             NetClient.sharedInstance.loadSessionIDAndUserKey(userName, password: password, completionHandler: sessionAndUserKeyClosure)
         }
     }
 
     @IBAction func udacitySignUp() {
-        UIApplication.sharedApplication().openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
+        UIApplication.shared.openURL(URL(string: "https://www.udacity.com/account/auth#!/signup")!)
     }
 
     /*
@@ -60,10 +60,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         the parsed data or report a bad login.  Finally, ask the NetClient to request the 
         user data from the Udacity API, passing in the next closure.
     */
-    func sessionAndUserKeyClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+    func sessionAndUserKeyClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
         var stillNeedLogin = true
-        defer { dispatch_async(dispatch_get_main_queue(), { self.manageUI(stillNeedLogin) })  }
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        defer { DispatchQueue.main.async(execute: { self.manageUI(stillNeedLogin) })  }
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
         if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity\n\n[\(error.localizedDescription)]", inViewController: self)
             return
@@ -73,10 +73,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             return
         }
 
-        let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
+        let newData = data.subdata(in: NSMakeRange(5, data.count - 5))  /* subset response data! */
         let parsedDict: NSDictionary?
         do {
-            try parsedDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+            try parsedDict = JSONSerialization.jsonObject(with: newData, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary
         } catch let parseError as NSError {
             UICommon.errorAlert("Parse Failure", message: "Could not parse account data from Udacity\n\n[\(parseError.localizedDescription)]", inViewController: self)
             return
@@ -99,28 +99,28 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         } else if let status = topDict["status"] as? Int, let errorStr = topDict["error"] as? NSString {
             // else, found an error message in the response
             self.errorMessage = "The email or password you \nentered is invalid\n\n[\(status):\(errorStr)]"
-            dispatch_async(dispatch_get_main_queue(), { self.reportLoginFailureWithShake() })
+            DispatchQueue.main.async(execute: { self.reportLoginFailureWithShake() })
         }
     }
 
     //http://stackoverflow.com/questions/3844557/uiview-shake-animation
-    private func reportLoginFailureWithShake() {
+    fileprivate func reportLoginFailureWithShake() {
         let animation = CABasicAnimation(keyPath: "position")
         animation.delegate = self
         animation.duration = 0.10
         animation.repeatCount = 6
         animation.autoreverses = true
 
-        let fromPoint = CGPointMake(loginContainerView.center.x - 20.0, loginContainerView.center.y)
-        animation.fromValue = NSValue(CGPoint: fromPoint)
+        let fromPoint = CGPoint(x: loginContainerView.center.x - 20.0, y: loginContainerView.center.y)
+        animation.fromValue = NSValue(cgPoint: fromPoint)
 
-        let toPoint = CGPointMake(loginContainerView.center.x + 20.0, loginContainerView.center.y)
-        animation.toValue = NSValue(CGPoint: toPoint)
+        let toPoint = CGPoint(x: loginContainerView.center.x + 20.0, y: loginContainerView.center.y)
+        animation.toValue = NSValue(cgPoint: toPoint)
 
-        loginContainerView.layer.addAnimation(animation, forKey: "position")
+        loginContainerView.layer.add(animation, forKey: "position")
     }
 
-    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    override func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         UICommon.errorAlert("Login Failure", message: self.errorMessage, inViewController: self)
     }
 
@@ -130,7 +130,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         initiate a NetClient background queue request for the location list, passing in 
         the next closure.  Finally load the Map/List controller in the main queue.
     */
-    func publicUserDataClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+    func publicUserDataClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
         if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]",
                 inViewController: self)
@@ -140,13 +140,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data", inViewController: self)
             return
         }
-        let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
+        let newData = data.subdata(in: NSMakeRange(5, data.count - 5)) /* subset response data! */
 
 
 
         let parsedDict: NSDictionary?
         do {
-            try parsedDict = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments) as? NSDictionary
+            try parsedDict = JSONSerialization.jsonObject(with: newData, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary
         } catch let parseError as NSError {
             UICommon.errorAlert("Parse Failure", message: "Could not parse user data from Udacity\n\n[\(parseError.localizedDescription)]",
                 inViewController: self)
@@ -163,7 +163,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
 
         self.currentUser.loadPublicData(userDict)
-        guard let controller = self.storyboard?.instantiateViewControllerWithIdentifier("MapAndListTabController")
+        guard let controller = self.storyboard?.instantiateViewController(withIdentifier: "MapAndListTabController")
             as? MapListViewController else { fatalError("COuld not find MapAndListTabController") }
 
         /*
@@ -173,12 +173,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         http://stackoverflow.com/questions/24056205/how-to-use-background-thread-in-swift
         */
 
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
             NetClient.sharedInstance.loadStudentLocations(controller.studentLocationClosure)
         }
 
-        dispatch_async(dispatch_get_main_queue()) {
-            self.presentViewController(controller, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.present(controller, animated: true, completion: nil)
         }
 
     }
@@ -187,11 +187,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: -
     // MARK: text field and login button management
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        guard let loginText = loginTextField.text, passwordText = passwordTextField.text else { /* Cannot happen? */ return true }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard let loginText = loginTextField.text, let passwordText = passwordTextField.text else { /* Cannot happen? */ return true }
         if loginText.characters.count > 0 && passwordText.characters.count > 0 {
             textField.resignFirstResponder()
-            dispatch_async(dispatch_get_main_queue(), { self.doLogin() })
+            DispatchQueue.main.async(execute: { self.doLogin() })
             return true
         }
         if textField == loginTextField { passwordTextField.becomeFirstResponder() }
@@ -205,27 +205,27 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     validate email addresses and it's not in the spec to do so.
     http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address?rq=1
     */
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange,
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange,
         replacementString string: String) -> Bool {
 
         var enableLogin: Bool = false
-        var newPasswordText: NSString = passwordTextField.text ?? ""
-        var newLoginText: NSString = loginTextField.text ?? ""
+        var newPasswordText: NSString = passwordTextField.text as NSString? ?? ""
+        var newLoginText: NSString = loginTextField.text as NSString? ?? ""
 
         if textField == loginTextField {
-            newLoginText = newLoginText.stringByReplacingCharactersInRange(range, withString: string)
+            newLoginText = newLoginText.replacingCharacters(in: range, with: string) as NSString
         } else {
-            newPasswordText = newPasswordText.stringByReplacingCharactersInRange(range, withString: string)
+            newPasswordText = newPasswordText.replacingCharacters(in: range, with: string) as NSString
         }
         enableLogin = (newLoginText.length >= 4) && (newPasswordText.length >= 4)
         if enableLogin {
-            enableLogin = (newLoginText.rangeOfString(".").location != NSNotFound) && (newLoginText.rangeOfString("@").location != NSNotFound)
+            enableLogin = (newLoginText.range(of: ".").location != NSNotFound) && (newLoginText.range(of: "@").location != NSNotFound)
         }
         manageLoginButton(enableLogin)
         return true
     }
 
-    private func manageUI(enable: Bool) {
+    fileprivate func manageUI(_ enable: Bool) {
         if !enable {
             loginTextField.resignFirstResponder()
             passwordTextField.resignFirstResponder()
@@ -235,13 +235,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             loginTextField.alpha = 0.6
             passwordTextField.alpha = 0.6
         }
-        loginTextField.enabled = enable
-        passwordTextField.enabled = enable
+        loginTextField.isEnabled = enable
+        passwordTextField.isEnabled = enable
         manageLoginButton(enable)
     }
 
-    private func manageLoginButton(enable: Bool) {
-        loginButton.enabled = enable
+    fileprivate func manageLoginButton(_ enable: Bool) {
+        loginButton.isEnabled = enable
         if enable {loginButton.alpha = 1.0 } else { loginButton.alpha = 0.2 }
     }
 

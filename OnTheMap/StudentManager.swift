@@ -8,6 +8,30 @@
 
 import Foundation
 import MapKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
 
 let NOTIFICATION_STUDENTS_LOADED = "com.o2l.studentmanagerloaded"
 
@@ -18,8 +42,8 @@ class StudentManager: CustomStringConvertible {
 
     static let sharedInstance = StudentManager()
 
-    private var studentInfoArray = [StudentInformation]()
-    private var newAnnotationsArray = [MKPointAnnotation]()
+    fileprivate var studentInfoArray = [StudentInformation]()
+    fileprivate var newAnnotationsArray = [MKPointAnnotation]()
 
     var countOfAllStudentLocations: Int? = nil
     var countOfReturnedStudentLocations = 0
@@ -34,14 +58,14 @@ class StudentManager: CustomStringConvertible {
     // MARK: -
     // MARK: Loading
 
-    private init() {}
+    fileprivate init() {}
 
-    func load(dictionary: [[String: AnyObject]], requestedBatchSize: Int) {
+    func load(_ dictionary: [[String: AnyObject]], requestedBatchSize: Int) {
         countOfReturnedStudentLocations += requestedBatchSize
         let nextBatch = StudentInformation.studentsFromResults(dictionary)
         newAnnotationsArray += studentInfoArray.map { return $0.annotation }
         self.studentInfoArray += nextBatch
-        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: NOTIFICATION_STUDENTS_LOADED), object: nil)
     }
 
     func canRetrieveMoreStudentLocations() -> Bool {
@@ -55,11 +79,11 @@ class StudentManager: CustomStringConvertible {
         return returnTheseAnnotations
     }
 
-    func appendSavedUser(user: CurrentUser) -> StudentInformation {
+    func appendSavedUser(_ user: CurrentUser) -> StudentInformation {
         let si = StudentInformation(user: user)
-        self.studentInfoArray.insert(si, atIndex: 0)
+        self.studentInfoArray.insert(si, at: 0)
         self.newAnnotationsArray.append(si.annotation)
-        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_STUDENTS_LOADED, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: NOTIFICATION_STUDENTS_LOADED), object: nil)
         return si
     }
 
@@ -84,7 +108,7 @@ class StudentManager: CustomStringConvertible {
         return studentInfoArray.count
     }
 
-    func studentAtIndex(row: Int) -> StudentInformation? {
+    func studentAtIndex(_ row: Int) -> StudentInformation? {
         if studentInfoArray.count == 0 { return nil }
         return studentInfoArray[row]
     }
@@ -95,20 +119,20 @@ class StudentManager: CustomStringConvertible {
         return Set(array)
     }
 
-    func getLocationsForUniqueID(uniqueID: String) -> [StudentInformation] {
+    func getLocationsForUniqueID(_ uniqueID: String) -> [StudentInformation] {
         return studentInfoArray.filter { $0.uniqueKey == uniqueID }
     }
 
-    func getStudentNameForUniqueID(uniqueID: String) -> String {
+    func getStudentNameForUniqueID(_ uniqueID: String) -> String {
         let array = self.getLocationsForUniqueID(uniqueID)
         return array.count > 0 ? "\(array[0].firstName) \(array[0].lastName)" : ""
     }
-    func countLocationsForUniqueID(uniqueID: String) -> Int {
+    func countLocationsForUniqueID(_ uniqueID: String) -> Int {
         let array = self.getLocationsForUniqueID(uniqueID)
         return array.count
     }
 
-    func getAnnotationsForUniqueID(uniqueID: String) -> [MKPointAnnotation] {
+    func getAnnotationsForUniqueID(_ uniqueID: String) -> [MKPointAnnotation] {
         let siArray = studentInfoArray.filter { $0.uniqueKey == uniqueID }
         return siArray.map { return $0.annotation }
     }

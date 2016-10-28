@@ -8,7 +8,7 @@
 
 import Foundation
 
-public typealias TaskRequestClosure = (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void
+public typealias TaskRequestClosure = (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Void
 
 
 
@@ -20,22 +20,22 @@ class NetClient {
 
     // MARK: -
     // MARK: constant properties
-    private let UDACITY_API_SESSION_URL = "https://www.udacity.com/api/session"
-    private let UDACITY_API_USERS_URL = "https://www.udacity.com/api/users/"
-    private let PARSE_API_STUDENT_LOCATIONS_URL = "https://api.parse.com/1/classes/StudentLocation"
-    private let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
-    private let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
+    fileprivate let UDACITY_API_SESSION_URL = "https://www.udacity.com/api/session"
+    fileprivate let UDACITY_API_USERS_URL = "https://www.udacity.com/api/users/"
+    fileprivate let PARSE_API_STUDENT_LOCATIONS_URL = "https://api.parse.com/1/classes/StudentLocation"
+    fileprivate let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
+    fileprivate let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 
     static let PARSE_API_BATCH_SIZE = 100        // this is parameterized so it can be changed for debugging
 
-    private let session = NSURLSession.sharedSession()
+    fileprivate let session = URLSession.shared
 
 
-    private init() {}
+    fileprivate init() {}
 
     // MARK: -
     // MARK: helper class function from The Movie Manager
-    class func escapedParameters(parameters: [String : AnyObject]) -> String {
+    class func escapedParameters(_ parameters: [String : AnyObject]) -> String {
         var urlVars = [String]()
         for (key, value) in parameters {
 
@@ -43,73 +43,73 @@ class NetClient {
             let stringValue = "\(value)"
 
             /* Escape it */
-            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+            let escapedValue = stringValue.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
 
             /* Append it */
             urlVars += [key + "=" + "\(escapedValue!)"]
         }
 
-        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
+        return (!urlVars.isEmpty ? "?" : "") + urlVars.joined(separator: "&")
     }
 
 
     // MARK: -
     // MARK: Udacity API calls
-    func loadSessionIDAndUserKey(userName: String, password: String, completionHandler: TaskRequestClosure) {
-        let request = NSMutableURLRequest(URL: NSURL(string: UDACITY_API_SESSION_URL)!)
-        request.HTTPMethod = "POST"
+    func loadSessionIDAndUserKey(_ userName: String, password: String, completionHandler: TaskRequestClosure) {
+        let request = NSMutableURLRequest(url: URL(string: UDACITY_API_SESSION_URL)!)
+        request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}".data(using: String.Encoding.utf8)
         // normally timeout is 60 seconds
         request.timeoutInterval = 30
-        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+        let task = session.dataTask(with: request, completionHandler: completionHandler)
         task.resume()
     }
 
-    func loadPublicUserData(userKey: String, completionHandler: TaskRequestClosure) {
-        let request = NSMutableURLRequest(URL: NSURL(string: UDACITY_API_USERS_URL + "\(userKey)")!)
-        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+    func loadPublicUserData(_ userKey: String, completionHandler: TaskRequestClosure) {
+        let request = NSMutableURLRequest(url: URL(string: UDACITY_API_USERS_URL + "\(userKey)")!)
+        let task = session.dataTask(with: request, completionHandler: completionHandler)
         task.resume()
     }
 
 
     // MARK: -
     // MARK: Parse API Calls
-    func loadStudentLocations(completionHandler: TaskRequestClosure) {
+    func loadStudentLocations(_ completionHandler: TaskRequestClosure) {
 
         var parameters = [String: AnyObject]()
-        parameters["count"] = "1"
-        parameters["order"] = "-createdAt"          // sort by create timestamp descending
-        if NetClient.PARSE_API_BATCH_SIZE != 100 { parameters["limit"] = NetClient.PARSE_API_BATCH_SIZE }
+        parameters["count"] = "1" as AnyObject?
+        parameters["order"] = "-createdAt" as AnyObject?          // sort by create timestamp descending
+        if NetClient.PARSE_API_BATCH_SIZE != 100 { parameters["limit"] = NetClient.PARSE_API_BATCH_SIZE as AnyObject? }
         if StudentManager.sharedInstance.canRetrieveMoreStudentLocations() {
-            parameters["skip"] = StudentManager.sharedInstance.countOfReturnedStudentLocations
+            parameters["skip"] = StudentManager.sharedInstance.countOfReturnedStudentLocations as AnyObject?
         }
 
         let urlString = PARSE_API_STUDENT_LOCATIONS_URL + NetClient.escapedParameters(parameters)
 
-        let request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
+        let request = NSMutableURLRequest(url: URL(string: urlString)!)
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
-        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+        let task = session.dataTask(with: request, completionHandler: completionHandler)
         task.resume()
     }
 
 
 
-    func postStudentLocation(student: CurrentUser, completionHandler: TaskRequestClosure) {
+    func postStudentLocation(_ student: CurrentUser, completionHandler: TaskRequestClosure) {
 
-        let request = NSMutableURLRequest(URL: NSURL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
+        request.httpMethod = "POST"
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
 
         let httpBody = student.encodedForHTTPBody
-        request.HTTPBody = httpBody.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpBody = httpBody.data(using: String.Encoding.utf8)
 
-        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+        let task = session.dataTask(with: request, completionHandler: completionHandler)
         task.resume()
     }
 

@@ -13,7 +13,7 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: -
     // MARK: properties
 
-    private let pinImage = UIImage(named: "Pin.pdf")
+    fileprivate let pinImage = UIImage(named: "Pin.pdf")
     @IBOutlet weak var tableView: UITableView!
 
 
@@ -26,14 +26,14 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
         If the student information becomes refreshed, this view's table doesn't know about it.  So
         we should listen for the notification.
         */
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "studentsLoadedNotification:",
-            name: NOTIFICATION_STUDENTS_LOADED, object: nil)
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(ListViewController.studentsLoadedNotification(_:)),
+            name: NSNotification.Name(rawValue: NOTIFICATION_STUDENTS_LOADED), object: nil)
     }
 
     deinit {
         // http://natashatherobot.com/ios8-where-to-remove-observer-for-nsnotification-in-swift/su
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
 
@@ -51,12 +51,12 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
         because it will be loaded by the time the user switches to that tab.  
         This is needed for a reload after a refresh.
     */
-    func studentsLoadedNotification(notification: NSNotification) {
+    func studentsLoadedNotification(_ notification: Notification) {
         // don't reference self.tableView if it hasn't been created yet
        if let table = self.tableView {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 table.reloadData()
-                table.setContentOffset(CGPointZero, animated: true)
+                table.setContentOffset(CGPoint.zero, animated: true)
             })
         }
     }
@@ -73,8 +73,8 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 
     func doRefresh() {
-        tableView.setContentOffset(CGPointZero, animated: true)
-        dispatch_async(dispatch_get_main_queue(), {
+        tableView.setContentOffset(CGPoint.zero, animated: true)
+        DispatchQueue.main.async(execute: {
             self.tableView.reloadData()
         })
         let tabsController = self.tabBarController as! MapListViewController
@@ -86,12 +86,12 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: Table View DataSource & Delegate support
 
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return StudentManager.sharedInstance.numberOfStudents()
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCellWithIdentifier("StudentListCell") else { fatalError("Could not load StudentListCell") }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "StudentListCell") else { fatalError("Could not load StudentListCell") }
         if let student = StudentManager.sharedInstance.studentAtIndex(indexPath.row) {
             cell.textLabel?.text = student.description
             if let detailTextLabel = cell.detailTextLabel {
@@ -107,9 +107,9 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let urlstr = StudentManager.sharedInstance.studentAtIndex(indexPath.row)?.mediaURL {
-            UIApplication.sharedApplication().openURL(NSURL(string: urlstr)!)
+            UIApplication.shared.openURL(URL(string: urlstr)!)
         }
     }
 

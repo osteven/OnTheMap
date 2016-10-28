@@ -25,8 +25,8 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     @IBOutlet weak var webView: UIWebView!
     @IBOutlet weak var linkBrowseButton: UIButton!
 
-    private var currentURLStringIsValid = false
-    private var failedWebViewLoadWithError = false
+    fileprivate var currentURLStringIsValid = false
+    fileprivate var failedWebViewLoadWithError = false
 
     // MARK: -
     // MARK: Loading
@@ -35,9 +35,9 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     /*
     Convenience loader so that this code needs not be duplicated in the tab VCs that both load this VC
     */
-    static func presentWithParent(parent: UIViewController) {
-        let controller = parent.storyboard?.instantiateViewControllerWithIdentifier("InformationPostingVC") as! InformationPostViewController
-        parent.presentViewController(controller, animated: true, completion: nil)
+    static func presentWithParent(_ parent: UIViewController) {
+        let controller = parent.storyboard?.instantiateViewController(withIdentifier: "InformationPostingVC") as! InformationPostViewController
+        parent.present(controller, animated: true, completion: nil)
     }
 
 
@@ -45,11 +45,11 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         super.viewDidLoad()
 
         self.findOnMapView.alpha = 1.0
-        self.findOnMapView.backgroundColor = UIColor.clearColor()
-        self.mapView.hidden = true
-        self.webView.hidden = true
+        self.findOnMapView.backgroundColor = UIColor.clear
+        self.mapView.isHidden = true
+        self.webView.isHidden = true
         self.webView.delegate = self
-        self.associatedLinkView.backgroundColor = UIColor.clearColor()
+        self.associatedLinkView.backgroundColor = UIColor.clear
         self.swapLinkAndFindView(true)
         manageFindButton(false)
         UICommon.setGradientForView(self.view)
@@ -65,7 +65,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     // MARK: -
     // MARK: UI
 
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange,
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange,
         replacementString string: String) -> Bool {
             if textField == linkTextField {
                 // if the entered link is not validated, disable the submit button
@@ -74,8 +74,8 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             }
 
             // if the location find string is empty, disable the find location button
-            var newText: NSString = whereStudyingTextField.text ?? ""
-            newText = newText.stringByReplacingCharactersInRange(range, withString: string)
+            var newText: NSString = whereStudyingTextField.text as NSString? ?? ""
+            newText = newText.replacingCharacters(in: range, with: string) as NSString
             manageFindButton(newText.length > 0)
             return true
     }
@@ -85,28 +85,28 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         triggerWebViewForURLCheck(linkText)
     }
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == linkTextField {
             guard let textBody = textField.text else { return /* I don't think this can happen */ false }
             triggerWebViewForURLCheck(textBody)
         } else if textField == whereStudyingTextField  {
-            if findOnMapButton.enabled { findOnTheMap() }
+            if findOnMapButton.isEnabled { findOnTheMap() }
         }
         return true
     }
 
-    private func manageFindButton(enable: Bool) {
-        findOnMapButton.enabled = enable
+    fileprivate func manageFindButton(_ enable: Bool) {
+        findOnMapButton.isEnabled = enable
         if enable {findOnMapButton.alpha = 1.0 } else { findOnMapButton.alpha = 0.2 }
     }
 
-    private func swapLinkAndFindView(enableFind: Bool) {
+    fileprivate func swapLinkAndFindView(_ enableFind: Bool) {
         if enableFind {
-            self.findOnMapView.hidden = false
-            self.associatedLinkView.hidden = true
+            self.findOnMapView.isHidden = false
+            self.associatedLinkView.isHidden = true
         } else {
-            self.findOnMapView.hidden = true
-            self.associatedLinkView.hidden = false
+            self.findOnMapView.isHidden = true
+            self.associatedLinkView.isHidden = false
             self.view.endEditing(true)
             manageUIReadyForSubmit(false)
         }
@@ -114,15 +114,15 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
 
 
-    private func showHideBrowserButton(shouldShow: Bool) {
+    fileprivate func showHideBrowserButton(_ shouldShow: Bool) {
         if shouldShow {
-            linkBrowseButton.setTitle("Show Browser", forState: .Normal)
-            self.mapView.hidden = false
-            self.webView.hidden = true
+            linkBrowseButton.setTitle("Show Browser", for: UIControlState())
+            self.mapView.isHidden = false
+            self.webView.isHidden = true
         } else {
-            linkBrowseButton.setTitle("Hide Browser", forState: .Normal)
-            self.mapView.hidden = true
-            self.webView.hidden = false
+            linkBrowseButton.setTitle("Hide Browser", for: UIControlState())
+            self.mapView.isHidden = true
+            self.webView.isHidden = false
         }
     }
 
@@ -133,24 +133,24 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     }
 
 
-    private func manageUIForActiveWebView(isActive: Bool) {
+    fileprivate func manageUIForActiveWebView(_ isActive: Bool) {
         if isActive {
             self.webView.alpha = 0.2
             associatedLinkView.alpha = 0.2
             linkTextField.resignFirstResponder()
-            linkTextField.enabled = false
+            linkTextField.isEnabled = false
         } else {
             self.webView.alpha = 1.0
-            linkTextField.enabled = true
+            linkTextField.isEnabled = true
             self.view.endEditing(true)
             associatedLinkView.alpha = 1.0
         }
 
     }
 
-    private func manageUIReadyForSubmit(isValid: Bool) {
+    fileprivate func manageUIReadyForSubmit(_ isValid: Bool) {
         currentURLStringIsValid = isValid
-        saveButton.enabled = isValid
+        saveButton.isEnabled = isValid
         saveButton.alpha = isValid ? 1.0 : 0.2
     }
 
@@ -161,15 +161,15 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     /*
     Attempt to load the user-entered URL string into the web view.
     */
-    private func triggerWebViewForURLCheck(rawURLString: String) {
-        if let components = NSURLComponents(string: rawURLString) {
+    fileprivate func triggerWebViewForURLCheck(_ rawURLString: String) {
+        if let components = URLComponents(string: rawURLString) {
             // in case they didn't enter the 'http://'
             if components.scheme == nil { components.scheme = "http" }
-            if let url = components.URL {
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-                let requestObj = NSMutableURLRequest(URL: url)
+            if let url = components.url {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                let requestObj = NSMutableURLRequest(url: url)
                 requestObj.timeoutInterval = 30
-                self.webView.loadRequest(requestObj)
+                self.webView.loadRequest(requestObj as URLRequest)
                 manageUIForActiveWebView(true)
             }
         } else {
@@ -179,11 +179,11 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
 
     // http://stackoverflow.com/questions/2491410/get-current-url-of-uiwebview/3654403#3654403
-    func webViewDidFinishLoad(webView: UIWebView) {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
         // don't restore the UI if the error alert dialog is showing
         if (!failedWebViewLoadWithError) { manageUIForActiveWebView(false) }
-        if let currentURL = self.webView.request?.URL?.absoluteString {
+        if let currentURL = self.webView.request?.url?.absoluteString {
             if currentURL != "about:blank" {
                 linkTextField.text = currentURL
                 manageUIReadyForSubmit(true)
@@ -200,7 +200,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         errors (usually Cancelled and CannotConnectToHost) even thought the web page 
         eventually loads.  And sometimes it hangs without reporting an error or a timeout.
     */
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
         guard let error = error else { /* how could this trugger if the error is nil? */ return }
 
         // I think these errors are unnecessarily triggered if the host forwards the request
@@ -211,7 +211,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         failedWebViewLoadWithError = true
 
 
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
         /*
         If you load a valid URL, then type in another invalid URL, the web view
         does not redraw to erase the previous valid page.  So, force it to "about:blank"
@@ -229,15 +229,15 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         UICommon.errorAlertWithHandler("URL Validation Failure", message: errorStr, inViewController: self, handler: webAlertHandler)
     }
 
-    private func webAlertHandler(action: UIAlertAction!) -> Void {
+    fileprivate func webAlertHandler(_ action: UIAlertAction!) -> Void {
         self.manageUIForActiveWebView(false)
         self.manageUIReadyForSubmit(false)
         self.failedWebViewLoadWithError = false      // flag that the error has been handled
     }
 
-    private func clearWebView() {
-        if let url = NSURL(string: "about:blank") {
-            let requestObj = NSURLRequest(URL: url)
+    fileprivate func clearWebView() {
+        if let url = URL(string: "about:blank") {
+            let requestObj = URLRequest(url: url)
             self.webView.loadRequest(requestObj)
         }
     }
@@ -245,13 +245,13 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
     // MARK: -
     // MARK: Geocoding
 
-    private func reportGeocodeError(location: String, error: NSError) {
+    fileprivate func reportGeocodeError(_ location: String, error: NSError) {
         var errorStr = ""
-        if error.code == CLError.LocationUnknown.rawValue {
+        if error.code == CLError.Code.locationUnknown.rawValue {
             errorStr = "Location unknown: '\(location)'"
-        } else if error.code == CLError.Network.rawValue {
+        } else if error.code == CLError.Code.network.rawValue {
             errorStr = "Geocode network connection is not responding"
-        } else if error.code == CLError.GeocodeFoundNoResult.rawValue {
+        } else if error.code == CLError.Code.geocodeFoundNoResult.rawValue {
             errorStr = "No geocode result found for: '\(location)'"
         } else {
             errorStr = "Unknow Core Location error"
@@ -266,16 +266,16 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
         guard let locationName = whereStudyingTextField.text else { /* I don't think this will ever happen */ return }
 
         findOnMapView.alpha = 0.2
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         CLGeocoder().geocodeAddressString(locationName, completionHandler:
             {(placemarks, error) in
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 self.findOnMapView.alpha = 1.0
                 if let error = error  {
-                    self.reportGeocodeError(locationName, error: error)
+                    self.reportGeocodeError(locationName, error: error as NSError)
                     return
                 }
-                guard let pmArray = placemarks where pmArray.count > 0 else {
+                guard let pmArray = placemarks, pmArray.count > 0 else {
                     // I don't know if this will ever happen
                     UICommon.errorAlert("Geocode Failure", message: "No geocode for \(locationName)", inViewController: self)
                     return
@@ -286,11 +286,11 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
                     UICommon.errorAlert("Geocode Failure", message: "No geocode for \(locationName)", inViewController: self)
                     return
                 }
-                let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+                let user = (UIApplication.shared.delegate as! AppDelegate).currentUser
                 user.mapString = locationName
                 user.latitude = placeMarkLoc.coordinate.latitude
                 user.longitude = placeMarkLoc.coordinate.longitude
-                self.mapView.hidden = false
+                self.mapView.isHidden = false
 
                 let annotation = MKPointAnnotation()
                 annotation.coordinate = CLLocationCoordinate2D(latitude: user.latitude, longitude: user.longitude)
@@ -322,18 +322,18 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             UICommon.errorAlert("Cannot Save", message: "Cannot save the location without a link", inViewController: self)
             return
         }
-        let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+        let user = (UIApplication.shared.delegate as! AppDelegate).currentUser
         user.mediaURL = linkText
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         self.manageUIForActiveWebView(true)
         self.manageUIReadyForSubmit(true)
         NetClient.sharedInstance.postStudentLocation(user, completionHandler: studentLocationClosure)
     }
 
 
-    func studentLocationClosure(data: NSData?, response: NSURLResponse?, error: NSError?) -> Void {
+    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
 
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
         if let error = error {
             UICommon.errorAlertWithHandler("Post API Failure", message: "Failed to post to Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self, handler: postAlertHandler)
             return
@@ -345,7 +345,7 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
 
         let parsedDict: [String: AnyObject]?
         do {
-            try parsedDict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments) as? [String: AnyObject]
+            try parsedDict = JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: AnyObject]
         } catch let parseError as NSError {
             UICommon.errorAlertWithHandler("Parse API Failure", message: "Could not parse location data returned from Parse\n\n[\(parseError.localizedDescription)]", inViewController: self, handler: postAlertHandler)
             return
@@ -355,20 +355,20 @@ class InformationPostViewController: UIViewController, UITextFieldDelegate, UIWe
             return
         }
 
-        let user = (UIApplication.sharedApplication().delegate as! AppDelegate).currentUser
+        let user = (UIApplication.shared.delegate as! AppDelegate).currentUser
         user.updateAfterSave(topDict)
         let newStudent = StudentManager.sharedInstance.appendSavedUser(user)
-        NSNotificationCenter.defaultCenter().postNotificationName(NOTIFICATION_MAP_SCROLL, object: newStudent.annotation)
-        dispatch_async(dispatch_get_main_queue(), {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: NOTIFICATION_MAP_SCROLL), object: newStudent.annotation)
+        DispatchQueue.main.async(execute: {
             self.manageUIForActiveWebView(false)
             self.manageUIReadyForSubmit(true)
         })
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 
 
-    private func postAlertHandler(action: UIAlertAction!) -> Void {
-        dispatch_async(dispatch_get_main_queue(), {
+    fileprivate func postAlertHandler(_ action: UIAlertAction!) -> Void {
+        DispatchQueue.main.async(execute: {
             self.manageUIForActiveWebView(false)
             self.manageUIReadyForSubmit(true)
          })
