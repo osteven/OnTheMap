@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, CAAnimationDelegate {
 
     // MARK: -
     // MARK: properties
@@ -60,7 +60,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         the parsed data or report a bad login.  Finally, ask the NetClient to request the 
         user data from the Udacity API, passing in the next closure.
     */
-    func sessionAndUserKeyClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
+    func sessionAndUserKeyClosure(_ data: Data?, response: URLResponse?, error: Error?) -> Void {
         var stillNeedLogin = true
         defer { DispatchQueue.main.async(execute: { self.manageUI(stillNeedLogin) })  }
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -72,8 +72,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             UICommon.errorAlert("Connection Failure", message: "Failed to connect to Udacity", inViewController: self)
             return
         }
+        let range = Range(5...data.count)
+        let newData = data.subdata(in: range)
 
-        let newData = data.subdata(in: NSMakeRange(5, data.count - 5))  /* subset response data! */
+        //let newData = data.subdata(in: NSMakeRange(5, data.count - 5))  /* subset response data! */
         let parsedDict: NSDictionary?
         do {
             try parsedDict = JSONSerialization.jsonObject(with: newData, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary
@@ -120,7 +122,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginContainerView.layer.add(animation, forKey: "position")
     }
 
-    override func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         UICommon.errorAlert("Login Failure", message: self.errorMessage, inViewController: self)
     }
 
@@ -130,7 +132,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         initiate a NetClient background queue request for the location list, passing in 
         the next closure.  Finally load the Map/List controller in the main queue.
     */
-    func publicUserDataClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
+    func publicUserDataClosure(_ data: Data?, response: URLResponse?, error: Error?) -> Void {
         if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data\n\n[\(error.localizedDescription)]",
                 inViewController: self)
@@ -140,7 +142,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Udacity public user data", inViewController: self)
             return
         }
-        let newData = data.subdata(in: NSMakeRange(5, data.count - 5)) /* subset response data! */
+        let range = Range(5...data.count)
+        let newData = data.subdata(in: range)
+
+        //let newData = data.subdata(in: NSMakeRange(5, data.count - 5)) /* subset response data! */
 
 
 
