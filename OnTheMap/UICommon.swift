@@ -15,14 +15,6 @@ public typealias UIAlertActionClosure = (UIAlertAction!) -> Void
 struct UICommon {
 
 
-    static func setupNavBar(_ callingViewController: UIViewController) -> [UIBarButtonItem] {
-
-        let pinButton = UIBarButtonItem(image: UIImage(named: "Pin.pdf"), style: .plain, target: callingViewController, action: Selector("doPin"))
-        let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: callingViewController, action: Selector("doRefresh"))
-
-        return [refreshButton, pinButton]
-    }
-
     static func errorAlertWithHandler(_ title: String, message: String, inViewController: UIViewController, handler: UIAlertActionClosure?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: handler)

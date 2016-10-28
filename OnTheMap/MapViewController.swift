@@ -75,7 +75,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.rightBarButtonItems = UICommon.setupNavBar(self)
+        self.navigationItem.rightBarButtonItems = setupNavBar()
         if StudentManager.sharedInstance.isLoaded() {
             self.mapView.addAnnotations(StudentManager.sharedInstance.getAnnotations())
         }
@@ -99,6 +99,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     // MARK: -
     // MARK: handle header buttons
+
+    private func setupNavBar() -> [UIBarButtonItem] {
+        let pinButton = UIBarButtonItem(image: UIImage(named: "Pin.pdf"), style: .plain, target: self, action: #selector(MapViewController.doPin))
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(MapViewController.doRefresh))
+        return [refreshButton, pinButton]
+    }
+
 
     func doPin() {
         InformationPostViewController.presentWithParent(self)

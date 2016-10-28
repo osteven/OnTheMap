@@ -42,7 +42,7 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.rightBarButtonItems = UICommon.setupNavBar(self)
+        self.navigationItem.rightBarButtonItems = setupNavBar()
     }
 
 
@@ -65,9 +65,15 @@ class ListViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: -
     // MARK: handle header buttons
 
+    private func setupNavBar() -> [UIBarButtonItem] {
+        let pinButton = UIBarButtonItem(image: UIImage(named: "Pin.pdf"), style: .plain, target: self, action: #selector(ListViewController.doPin))
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(ListViewController.doRefresh))
+        return [refreshButton, pinButton]
+    }
 
 
-     func doPin() {
+
+    func doPin() {
         InformationPostViewController.presentWithParent(self)
     }
 
