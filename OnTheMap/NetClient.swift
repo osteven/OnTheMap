@@ -13,6 +13,8 @@ public typealias TaskRequestClosure = (Data?, URLResponse?, Error?) -> Void
 
 
 
+// https://api.parse.com/1/classes becomes https://parse.udacity.com/parse/classes
+
 
 
 class NetClient {
@@ -24,7 +26,7 @@ class NetClient {
     // MARK: constant properties
     fileprivate let UDACITY_API_SESSION_URL = "https://www.udacity.com/api/session"
     fileprivate let UDACITY_API_USERS_URL = "https://www.udacity.com/api/users/"
-    fileprivate let PARSE_API_STUDENT_LOCATIONS_URL = "https://api.parse.com/1/classes/StudentLocation"
+    fileprivate let PARSE_API_STUDENT_LOCATIONS_URL = "https://parse.udacity.com/parse/classes/StudentLocation"
     fileprivate let PARSE_API_APP_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
     fileprivate let PARSE_API_REST_KEY = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
 
@@ -53,6 +55,7 @@ class NetClient {
 
         return (!urlVars.isEmpty ? "?" : "") + urlVars.joined(separator: "&")
     }
+
 
 
     // MARK: -
@@ -90,7 +93,9 @@ class NetClient {
 
         let urlString = PARSE_API_STUDENT_LOCATIONS_URL + NetClient.escapedParameters(parameters)
 
-        var request = URLRequest(url: URL(string: urlString)!)
+        guard let url = URL(string: urlString) else { fatalError("could not generate url: \(urlString)") }
+
+        var request = URLRequest(url: url)
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
         let task = session.dataTask(with: request, completionHandler: completionHandler)

@@ -34,7 +34,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, CAAnimationDel
         loginTextField.delegate = self
         passwordTextField.delegate = self
         manageLoginButton(false)
-}
+    }
 
 
 
@@ -169,7 +169,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, CAAnimationDel
 
         self.currentUser.loadPublicData(userDict)
         guard let controller = self.storyboard?.instantiateViewController(withIdentifier: "MapAndListTabController")
-            as? MapListViewController else { fatalError("COuld not find MapAndListTabController") }
+            as? MapListViewController else { fatalError("Could not find MapAndListTabController") }
 
         /*
         Use a background queue to query the Parse API.  It queries both the total count of all Student Locations, 
