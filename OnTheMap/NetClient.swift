@@ -1,3 +1,4 @@
+
 //
 //  NetClient.swift
 //  OnTheMap
@@ -8,7 +9,8 @@
 
 import Foundation
 
-public typealias TaskRequestClosure = (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Void
+public typealias TaskRequestClosure = (Data?, URLResponse?, Error?) -> Void
+
 
 
 
@@ -55,8 +57,8 @@ class NetClient {
 
     // MARK: -
     // MARK: Udacity API calls
-    func loadSessionIDAndUserKey(_ userName: String, password: String, completionHandler: TaskRequestClosure) {
-        let request = NSMutableURLRequest(url: URL(string: UDACITY_API_SESSION_URL)!)
+    func loadSessionIDAndUserKey(_ userName: String, password: String, completionHandler: @escaping TaskRequestClosure) {
+        var request = URLRequest(url: URL(string: UDACITY_API_SESSION_URL)!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -67,8 +69,8 @@ class NetClient {
         task.resume()
     }
 
-    func loadPublicUserData(_ userKey: String, completionHandler: TaskRequestClosure) {
-        let request = NSMutableURLRequest(url: URL(string: UDACITY_API_USERS_URL + "\(userKey)")!)
+    func loadPublicUserData(_ userKey: String, completionHandler: @escaping TaskRequestClosure) {
+        let request = URLRequest(url: URL(string: UDACITY_API_USERS_URL + "\(userKey)")!)
         let task = session.dataTask(with: request, completionHandler: completionHandler)
         task.resume()
     }
@@ -76,7 +78,7 @@ class NetClient {
 
     // MARK: -
     // MARK: Parse API Calls
-    func loadStudentLocations(_ completionHandler: TaskRequestClosure) {
+    func loadStudentLocations(_ completionHandler: @escaping TaskRequestClosure) {
 
         var parameters = [String: AnyObject]()
         parameters["count"] = "1" as AnyObject?
@@ -88,7 +90,7 @@ class NetClient {
 
         let urlString = PARSE_API_STUDENT_LOCATIONS_URL + NetClient.escapedParameters(parameters)
 
-        let request = NSMutableURLRequest(url: URL(string: urlString)!)
+        var request = URLRequest(url: URL(string: urlString)!)
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
         let task = session.dataTask(with: request, completionHandler: completionHandler)
@@ -97,9 +99,9 @@ class NetClient {
 
 
 
-    func postStudentLocation(_ student: CurrentUser, completionHandler: TaskRequestClosure) {
+    func postStudentLocation(_ student: CurrentUser, completionHandler: @escaping TaskRequestClosure) {
 
-        let request = NSMutableURLRequest(url: URL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
+        var request = URLRequest(url: URL(string: PARSE_API_STUDENT_LOCATIONS_URL)!)
         request.httpMethod = "POST"
         request.addValue(PARSE_API_APP_ID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(PARSE_API_REST_KEY, forHTTPHeaderField: "X-Parse-REST-API-Key")
