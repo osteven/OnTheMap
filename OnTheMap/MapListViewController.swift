@@ -26,7 +26,7 @@ class MapListViewController: UITabBarController {
     it fails. Finally, grab the count first, then the top-level user dictionary and pass it 
     to the StudentManager singleton to be parsed
     */
-    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: NSError?) -> Void {
+    func studentLocationClosure(_ data: Data?, response: URLResponse?, error: Error?) -> Void {
         if let error = error {
             UICommon.errorAlert("Connection Failure", message: "Failed to get Parse API student location data\n\n[\(error.localizedDescription)]", inViewController: self)
             return
